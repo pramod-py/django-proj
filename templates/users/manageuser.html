@@ -1,0 +1,376 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<!-- Add ur Dynamic Content here -->
+<!-- Header -->
+{% if user.id is not None %}
+<header class="w3-container" style="padding-top:22px">
+    <h5><b><i class="fa fa-dashboard"></i>Manage User</b></h5>
+</header>
+
+
+    <div class="table-wrapper">
+        <div class="table-title">
+            <div class="row">
+                <div class="col-6 col-md-4">
+                    <h2>Manage <b>User</b></h2> {% include 'includes/alerts.html' %}
+                </div>
+                <div class="col-md-auto">
+                    <div data-toggle="tooltip" title="Click here to add new user">
+                        <a href="#addUsereModal" class="btn btn-success" data-toggle="modal"><i class="material-icons"
+                                                                                                style="font-size: 14px;">&#xE147;</i>
+                            <span>Add New User</span></a>
+                    </div>
+                    <!-- <a href="#deleteUserModal" class="btn btn-danger" data-toggle="modal"><i class="material-icons">&#xE15C;</i> <span>Delete</span></a>						 -->
+                </div>
+                <div class="col col-lg-4">
+                    <form method="GET" class="form-inline">
+                        <!--Segmented buttons-->
+                        <input name="query" class="form-control mr-sm-2" type="search" placeholder="Search"
+                               aria-label="Search">
+                        <!--
+                        <div class="form-group col-md-4">
+                            <select id="category" class="form-control" name="category">
+                              <option selected>Choose</option>
+                              <option value="first_name">First Name</option>
+                              <option value="email">Email</option>
+                              <option value="phone_number">Phone</option>
+                              <option value="address">Address</option>
+                            </select>
+                          </div> -->
+                        <button class="btn btn-info" type="submit" data-toggle="tooltip" title="Click here to search"><i
+                                class="fa fa-search"></i>Search
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="container-fluid">
+        <table class="table table-striped table-hover">
+            <thead>
+            <tr>
+                <!--<th>
+                    <span class="custom-checkbox">
+                        <input type="checkbox" id="selectAll">
+                        <label for="selectAll"></label>
+                    </span>
+                </th>-->
+                <th>#</th>
+                <th>Name</th>
+                <th>Email</th>
+                <!--                          <th>Address</th>-->
+                <th>Phone</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for user in user_obj %}
+            <tr>
+                <!--<td>
+                    <span class="custom-checkbox">
+                        <input type="checkbox" id="checkbox1" name="options[]" value="1">
+                        <label for="checkbox1"></label>
+                    </span>
+                </td>-->
+                <td>{{ forloop.counter }}</td>
+                <td>{{ user.first_name }} {{ user.last_name }}</td>
+                <td>{{ user.email }}</td>
+                <!--                          <td>{{ user.address }}</td>-->
+                <td>{{ user.phone_number }}</td>
+                <td>
+                    {% if user.is_active %}
+                    <span><i class="material-icons" data-toggle="tooltip" title="Active" style="color:MediumSeaGreen;">check_circle</i></span>
+                    {%else%}
+                    <span><i class="material-icons" data-toggle="tooltip" title="Inactive"
+                             style="color:Red;">cancel</i></span>
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="#qrcodeUserModal-{{forloop.counter}}" class="qrcode" data-toggle="modal"><i
+                            class="material-icons" data-toggle="tooltip" title="QR Code"
+                            style="color:#2E86C1;">&#xe3af;</i></a>
+                    <a href="#editUserModal-{{forloop.counter}}" class="edit" data-toggle="modal"><i
+                            class="material-icons"
+                            data-toggle="tooltip"
+                            title="Edit"
+                            style="color:#F39C12;">&#xE254;</i></a>
+                    <a href="#deleteUserModal-{{forloop.counter}}" class="delete" data-toggle="modal"><i
+                            class="material-icons" data-toggle="tooltip" title="Delete"
+                            style="color:#CB4335;">&#xE872;</i></a>
+                    <a href="#viewUserModal-{{forloop.counter}}" class="view" data-toggle="modal"><i
+                            class="material-icons"
+                            data-toggle="tooltip"
+                            title="View"
+                            style="color:#28B463 ;">&#xE8F4;</i></a>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+        <!--Pagination -->
+        <!--    <div class="float-right">-->
+        <!--        <div class="clearfix">-->
+        <!--            <div class="hint-text">Showing <b>{{ user_obj.start_index }}</b> - <b>{{ user_obj.end_index }}</b> of <b>{{-->
+        <!--                user_obj.paginator.count }}</b> entries-->
+        <!--            </div>-->
+        <!--            <ul class="pagination">-->
+        <!--                {% if user_obj.has_previous %}-->
+        <!--                <li class="page-item">-->
+        <!--                    <a href="?{% if query %}query={{ query }}&{% endif %}page=1" class="page-link">First</a>-->
+        <!--                </li>-->
+        <!--                <li class="page-item">-->
+        <!--                    <a href="?{% if query %}query={{ query }}&{% endif %}page={{ user_obj.previous_page_number }}"-->
+        <!--                       class="page-link">Previous</a>-->
+        <!--                </li>-->
+        <!--                {% endif %}-->
+
+        <!--                {% for num in user_obj.paginator.page_range %}-->
+        <!--                {% if num == user_obj.number %}-->
+        <!--                <li class="page-item active">-->
+        <!--                    <a href="?{% if query %}query={{ query }}&{% endif %}page={{ num }}" class="page-link">{{ num }}</a>-->
+        <!--                </li>-->
+        <!--                {% else %}-->
+        <!--                <li class="page-item">-->
+        <!--                    <a href="?{% if query %}query={{ query }}&{% endif %}page={{ num }}" class="page-link">{{ num }}</a>-->
+        <!--                </li>-->
+        <!--                {% endif %}-->
+        <!--                {% endfor %}-->
+
+        <!--                {% if user_obj.has_next %}-->
+        <!--                <li class="page-item">-->
+        <!--                    <a href="?{% if query %}query={{ query }}&{% endif %}page={{ user_obj.next_page_number }}"-->
+        <!--                       class="page-link">Next</a>-->
+        <!--                </li>-->
+        <!--                <li class="page-item">-->
+        <!--                    <a href="?{% if query %}query={{ query }}&{% endif %}page={{ user_obj.paginator.num_pages }}"-->
+        <!--                       class="page-link">Last</a>-->
+        <!--                </li>-->
+        <!--                {% endif %}-->
+
+        <!--            </ul>-->
+        <!--        </div>-->
+        <!--    </div>-->
+        <!--End Pagination -->
+    </div>
+
+<!-- Add User Modal HTML -->
+<div id="addUsereModal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="{% url 'adduser' %}" method="POST">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h4 class="modal-title">Add User</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>First Name</label>
+                        <input name="first_name" type="text" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Last Name</label>
+                        <input name="last_name" type="text" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input name="email" type="email" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Address</label>
+                        <textarea name="address" class="form-control" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input name="phone_number" type="text" class="form-control" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
+                    <input type="submit" class="btn btn-success" value="Add">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- Edit Modal HTML -->
+{% for user in user_obj %}
+<div id="editUserModal-{{forloop.counter}}" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="/users/updateuser/{{user.id}}" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h4 class="modal-title">Edit User</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+                <div class="modal-body">
+
+                    <div class="form-group">
+                        <label>First Name</label>
+                        <input name="first_name" value="{{ user.first_name }}" type="text" class="form-control"
+                               required>
+                    </div>
+                    <div class="form-group">
+                        <label>Last Name</label>
+                        <input name="last_name" value="{{ user.last_name }}" type="text" class="form-control"
+                               required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input name="email" value="{{ user.email }}" type="email" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Address</label>
+                        <textarea name="address" class="form-control" required>{{ user.address }}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input readonly name="phone_number" value="{{ user.phone_number }}" type="text"
+                               class="form-control">
+                    </div>
+                </div>
+                <div>
+                    <!-- <img name="qr_code" src={{user.qr_code.url}} width="250" height="250" type="file"> -->
+                    <input type="hidden" name="qr_code" value="{{ user.qr_code.url }}">
+                </div>
+                <div class="modal-footer">
+                    <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
+                    <input type="submit" class="btn btn-info" value="Update">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endfor %}
+<!-- Delete Modal HTML -->
+{% for user in user_obj %}
+<div id="deleteUserModal-{{forloop.counter}}" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="/users/deleteuser/{{user.id}}" method="POST">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h4 class="modal-title">Delete User</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete <b>{{user.first_name}}</b> Records?</p>
+                    <p class="text-warning"><small>This action cannot be undone.</small></p>
+                </div>
+                <div class="modal-footer">
+                    <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
+                    <input type="submit" class="btn btn-danger" value="Delete">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<!-- VIEW Modal HTML -->
+{% for user in user_obj %}
+<div id="viewUserModal-{{forloop.counter}}" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="/users/viewuser/{{user.id}}" method="POST">
+                {% csrf_token %}
+                <div class="printThis">
+                    <div class="modal-header">
+                        <h4 class="modal-title">View User</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>User Id</label>
+                            <input readonly name="user_id" value="{{ user.phone_number }}" type="text"
+                                   class="form-control">
+                        </div>
+
+                        <div class="form-group">
+                            <label>First Name</label>
+                            <input readonly name="first_name" value="{{ user.first_name }}" type="text"
+                                   class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>Last Name</label>
+                            <input readonly name="last_name" value="{{ user.last_name }}" type="text"
+                                   class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input readonly name="email" value="{{ user.email }}" type="email" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>Address</label>
+                            <textarea readonly name="address" class="form-control"
+                                      required>{{ user.address }}</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Phone Number</label>
+                            <input readonly name="phone_number" value="{{ user.phone_number }}" type="text"
+                                   class="form-control">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="modal-footer">
+                        <input type="button" class="btn btn-default" data-dismiss="modal" value="Close">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<!-- Review QR Code Modal HTML -->
+{% for user in user_obj %}
+<div id="qrcodeUserModal-{{forloop.counter}}" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="/users/viewuserqrcode/{{user.id}}" method="POST">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h4 class="modal-title">View User QR Code</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>First Name</label>
+                        <input readonly name="first_name" value="{{ user.first_name }}" type="text"
+                               class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input readonly name="phone_number" value="{{ user.phone_number }}" type="text"
+                               class="form-control">
+                    </div>
+                    <div>
+                        <label>QR Code</label>
+                        <img src={{user.qr_code.url}} width="250" height="250">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="button" class="btn btn-default" data-dismiss="modal" value="Close">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+
+{% else %}
+<div class="w3-third">
+    <h5>static Data</h5>
+    <p> This is static block when no one is logged in </p>
+    <img src="{% static 'images/region.jpg' %}" style="width:100%" alt="Google Regional Map">
+</div>
+
+{% endif %}
+{% endblock %}

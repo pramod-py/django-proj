@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<!-- Add ur Dynamic Content here -->
+<!-- Header -->
+{% if user.id is not None %}
+<header class="w3-container" style="padding-top:22px">
+    <h5><b><i class="fa fa-dashboard"></i> My Dashboard</b></h5>
+</header>
+<div class="container-fluid">
+    <div class="w3-row-padding w3-margin-bottom">
+        <div class="w3-quarter">
+            <div class="w3-container w3-red w3-padding-16">
+                <div class="w3-left"><i class="fa fa-book w3-xxxlarge"></i></div>
+                <div class="w3-right">
+                    <h3>{{total_book}}</h3>
+                </div>
+                <div class="w3-clear"></div>
+                <h4>Total Books</h4>
+                <a href="{% url 'managebook' %}">
+                    <div class="w-auto p-3" style="background-color: rgba(255, 0, 0, .1); color: white !important;">More
+                        Info
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="w3-quarter">
+            <div class="w3-container w3-blue w3-padding-16">
+                <div class="w3-left"><i class="fa fa-book w3-xxxlarge"></i></div>
+                <div class="w3-right">
+                    <h3>{{borrowed_book_count}}</h3>
+                </div>
+                <div class="w3-clear"></div>
+                <h4>Books Borrowed</h4>
+                <a href="{% url 'managebook' %}">
+                    <div class="w-auto p-3" style="background-color: rgba(255, 0, 0, .1); color: white !important;">More
+                        Info
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
+    <div class="w3-row-padding w3-margin-bottom">
+        <div class="w3-quarter">
+            <div class="w3-container w3-teal w3-padding-16">
+                <div class="w3-left"><i class="fa fa-book w3-xxxlarge"></i></div>
+                <div class="w3-right">
+                    <h3>{{available_book_count}}</h3>
+                </div>
+                <div class="w3-clear"></div>
+                <h4>Books Available</h4>
+                <a href="{% url 'managebook' %}">
+                    <div class="w-auto p-3" style="background-color: rgba(255, 0, 0, .1); color: white !important;">More
+                        Info
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="w3-quarter">
+            <div class="w3-container w3-orange w3-text-white w3-padding-16">
+                <div class="w3-left"><i class="fa fa-users w3-xxxlarge"></i></div>
+                <div class="w3-right">
+                    <h3>{{ active_user_count}}</h3>
+                </div>
+                <div class="w3-clear"></div>
+                <h4>Active Users</h4>
+                <a href="{% url 'manageuser' %}">
+                    <div class="w-auto p-3" style="background-color: rgba(255, 0, 0, .1); color: white !important;">More
+                        Info
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+<p>
+
+    1. Print() user data(ID Card) <br>
+    2. User status= True if book borrowed<br>
+    3. Add column in User model Number of books borrowed<br>
+    4. Remove unwanted column from user model<br>
+    5. Check QR file are why overriding  and QR code fix size <br>
+    6. Add librarian, borrow, return column in transaction model <br>
+    7. Check on delete cascade functionality <br>
+    8. Add vertical scroll bar if screen size is small <br>
+    9. Pagination functionality <br>
+    10.Add bulk data from csv file<br>
+
+
+</p>
+</div>
+
+{% else %}
+<div class="w3-third">
+    <h5>Regions</h5>
+    <img src="{% static 'images/region.jpg' %}" style="width:100%" alt="Google Regional Map">
+</div>
+
+{% endif %}
+{% endblock %}

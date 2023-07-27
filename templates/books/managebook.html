@@ -1,0 +1,650 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<!-- Add your dynamic content here -->
+<!-- Header -->
+{% if user.id is not None %}
+<header class="w3-container" style="padding-top:22px">
+    <h5><b><i class="fa fa-dashboard"></i> Manage Books</b></h5>
+</header>
+<div class="container-fluid">
+    <div class="table-wrapper">
+        <div class="table-title">
+            <div class="row">
+                <div class="col-6 col-md-4">
+                    <h2>Manage <b>Books</b></h2> {% include 'includes/alerts.html' %}
+                </div>
+                <div class="col-md-auto">
+                    <a href="#addBookModal" class="btn btn-success" data-toggle="modal"><i class="material-icons"
+                                                                                           style="font-size: 14px;">&#xE147;</i>
+                        <span>Add New Book</span></a>
+                </div>
+                <div class="col col-lg-4">
+                    <form method="GET" class="form-inline">
+                        <!--Segmented buttons-->
+                        <input name="query" class="form-control mr-sm-2" type="search" placeholder="Search"
+                               aria-label="Search">
+
+                        <button class="btn btn-info" type="submit" data-toggle="tooltip" title="Click here to search"><i
+                                class="fa fa-search"></i> Search
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="table-container">
+            <table class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Category</th>
+                    <!--                <th>Subcategory</th>-->
+                    <th>Language</th>
+                    <th>Rack Number</th>
+                    <th>Availability</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for book in book_obj %}
+                <tr>
+                    <!--<td>
+                        <span class="custom-checkbox">
+                            <input type="checkbox" id="checkbox1" name="options[]" value="1">
+                            <label for="checkbox1"></label>
+                        </span>
+                    </td>-->
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ book.book_title }}</td>
+                    <td>{{ book.book_author.name }}</td>
+                    <td>
+                        {% for category in book.categories.all %}
+                        {{ category.name }}
+                        {% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                        <!--                </td>-->
+                        <!--                <td>-->
+                        <!--                    {% for subcategory in book.sub_category.all %}-->
+                        <!--                    {{ subcategory.name }}-->
+                        <!--                    {% if not forloop.last %}, {% endif %}-->
+                        <!--                    {% endfor %}-->
+                        <!--                </td>-->
+                    <td>{{ book.book_language }}</td>
+                    <td>
+                        {% for rack_number in book.rack_number.all %}
+                        {{ rack_number.name }}
+                        {% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+
+                    </td>
+                    <td>{% if book.status %}
+                        <span><i class="material-icons" data-toggle="tooltip" title="Available"
+                                 style="color:MediumSeaGreen;">check_circle</i></span>
+                        {% else %}
+                        <span><i class="material-icons" data-toggle="tooltip" title="Not Available" style="color:Red;">cancel</i></span>
+                        {% endif %}
+
+                    </td>
+                    <td>
+                        <a href="#qrcodeBookModal-{{forloop.counter}}" class="qrcode" data-toggle="modal"><i
+                                class="material-icons" data-toggle="tooltip" title="QR Code" style="color:#2E86C1;">&#xe3af;</i></a>
+                        <a href="#editBookModal-{{ forloop.counter }}" class="edit" data-toggle="modal"><i
+                                class="material-icons" data-toggle="tooltip" title="Edit" style="color:#F39C12;">&#xE254;</i></a>
+                        <a href="#deleteBookModal-{{ forloop.counter }}" class="delete" data-toggle="modal"><i
+                                class="material-icons" data-toggle="tooltip" title="Delete" style="color:#CB4335;">&#xE872;</i></a>
+                        <a href="#viewBookModal-{{ forloop.counter }}" class="view" data-toggle="modal"><i
+                                class="material-icons" data-toggle="tooltip" title="View" style="color:#28B463 ;">&#xE8F4;</i></a>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <!--Pagination -->
+        <!--        <div class="float-right">-->
+        <!--            <div class="clearfix" class="float-right">-->
+        <!--                <div class="hint-text">Showing <b>{{ books|length }}</b> out of <b>{{ books.count }}</b> entries</div>-->
+        <!--                <ul class="pagination">-->
+        <!--                    <li class="page-item disabled"><a href="#">Previous</a></li>-->
+        <!--                    {% for i in books.paginator.page_range %}-->
+        <!--                    {% if books.number == i %}-->
+        <!--                    <li class="page-item active"><a href="#" class="page-link">{{ i }}</a></li>-->
+        <!--                    {% else %}-->
+        <!--                    <li class="page-item"><a href="#" class="page-link">{{ i }}</a></li>-->
+        <!--                    {% endif %}-->
+        <!--                    {% endfor %}-->
+        <!--                    <li class="page-item"><a href="#" class="page-link">Next</a></li>-->
+        <!--                </ul>-->
+        <!--            </div>-->
+        <!--        </div>-->
+    </div>
+    <!-- Add Book Modal HTML -->
+    <div id="addBookModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form action="{% url 'add_book' %}" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <h4 class="modal-title">Add Book</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>Title</label>
+                            <input name="book_title" type="text" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Author</label>
+                            <select name="book_author" id="author-select" class="form-control" required>
+                                <option value="new">---Add New Author----</option>
+                                {% for author in authors %}
+                                <option value="{{ author.id }}">{{ author.name }}</option>
+                                {% endfor %}
+
+                            </select>
+
+                            <input type="text" name="new_author" id="new-author-input" class="form-control"
+                                   style="display: none;">
+
+                        </div>
+                        <div class="form-group">
+                            <label>Category</label>
+                            <select name="categories" class="form-control">
+                                {% for category in categories %}
+                                <option value="{{ category.id }}">{{ category.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Subcategory</label>
+                            <select name="sub_category" class="form-control">
+                                {% for subcategory in subcategories %}
+                                <option value="{{ subcategory.id }}">{{ subcategory.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Publish Date</label>
+                            <input name="publish_date" type="datetime-local" class="form-control" required>
+                        </div>
+
+                        <!--                        <div class="form-group">-->
+                        <!--                            <label>Status</label>-->
+                        <!--                            <select name="status" class="form-control" required>-->
+                        <!--                                <option value="True">Available</option>-->
+                        <!--                                <option value="False">Not Available</option>-->
+                        <!--                            </select>-->
+                        <!--                        </div>-->
+
+                        <div class="form-group">
+                            <label>Language</label>
+                            <select name="book_language" class="form-control" required>
+                                <option value="Marathi">Marathi</option>
+                                <option value="Hindi">Hindi</option>
+                                <option value="English">English</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Number of Copies</label>
+                            <input name="no_of_copies_actual" type="text" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Rack Name</label>
+                            <select name="rack_number" class="form-control" required>
+                                {% for rack in racks %}
+                                <option value="{{ rack.id }}">{{ rack.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <hr>
+                        <div class="form-group">
+                            <label>Book Price</label>
+                            <input name="book_price" value="1000" type="text" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <input name="book_description" value="the book is related to" type="text"
+                                   class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>Book Publisher</label>
+                            <input name="book_publisher" value="temp" type="text" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>ISBN</label>
+                            <input name="isbn" value="111-11-11" type="text" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>Cover Image</label>
+                            <input type="file" name="cover_image">
+                        </div>
+                        <!-- Add other book fields as needed -->
+                    </div>
+                    <div class="modal-footer">
+                        <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
+                        <input type="submit" class="btn btn-success" value="Add">
+                    </div>
+
+
+                </form>
+            </div>
+        </div>
+        <script>
+    // Handle the user's selection
+    document.getElementById("author-select").addEventListener("change", function() {
+        var selectedValue = this.value;
+        if (selectedValue === "new") {
+            // Show the input field for new author
+            document.getElementById("new-author-input").style.display = "block";
+        } else {
+            // Hide the input field for new author
+            document.getElementById("new-author-input").style.display = "none";
+        }
+    });
+
+        </script>
+
+    </div>
+
+
+    <!-- Edit Book Modal HTML -->
+    {% for book in book_obj %}
+    <div id="editBookModal-{{ forloop.counter }}" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form action="/books/update_book/{{book.id}}" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <h4 class="modal-title">Edit Book Details</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>Book Id</label>
+                            <input readonly name="book_id" value="{{ book.book_id }}" type="text" class="form-control"
+                                   required>
+                        </div>
+                        <div class="form-group">
+                            <label>Book Title</label>
+                            <input readonly name="book_title" value="{{ book.book_title }}" type="text"
+                                   class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Author</label>
+                            <select name="book_author" class="form-control" required>
+                                {% for author in authors %}
+                                {% if author.id == book.book_author.id %}
+                                <option value="{{ author.id }}" selected>{{ author.name }}</option>
+                                {% else %}
+                                <option value="{{ author.id }}">{{ author.name }}</option>
+                                {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Category</label>
+                            <select name="categories" class="form-control" required>
+                                {% for category in categories %}
+                                {% if category in book.categories.all %}
+                                <option value="{{ category.id }}" selected>{{ category.name }}</option>
+                                {% else %}
+                                <option value="{{ category.id }}">{{ category.name }}</option>
+                                {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Subcategory</label>
+                            <select name="sub_category" class="form-control" required>
+                                {% for subcategory in subcategories %}
+                                {% if subcategory in book.sub_category.all %}
+                                <option value="{{ subcategory.id }}" selected>{{ subcategory.name }}</option>
+                                {% else %}
+                                <option value="{{ subcategory.id }}">{{ subcategory.name }}</option>
+                                {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <!--                        <div class="form-group">-->
+                        <!--                            <label>Status</label>-->
+                        <!--                            <select name="status" class="form-control" required>-->
+                        <!--                                {% if book.status %}-->
+                        <!--                                <option value="True" selected>Available</option>-->
+                        <!--                                <option value="False">Not Available</option>-->
+                        <!--                                {% else %}-->
+                        <!--                                <option value="True">Available</option>-->
+                        <!--                                <option value="False" selected>Not Available</option>-->
+                        <!--                                {% endif %}-->
+                        <!--                            </select>-->
+                        <!--                      </div>-->
+                        <div class="form-group">
+                            <label>Book Language</label>
+                            <select name="book_language" class="form-control" required>
+                                {% if book.book_language == "English" %}
+                                <option value="English" selected>English</option>
+                                <option value="Hindi">Hindi</option>
+                                <option value="Marathi">Marathi</option>
+                                {% elif book.book_language == "Hindi" %}
+                                <option value="English">English</option>
+                                <option value="Hindi" selected>Hindi</option>
+                                <option value="Marathi">Marathi</option>
+                                {% elif book.book_language == "Marathi" %}
+                                <option value="English">English</option>
+                                <option value="Hindi">Hindi</option>
+                                <option value="Marathi" selected>Marathi</option>
+                                {% else %}
+                                <option value="" selected disabled>Select a language</option>
+                                <option value="English">English</option>
+                                <option value="Hindi">Hindi</option>
+                                <option value="Marathi">Marathi</option>
+                                {% endif %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Rack Name</label>
+                            <select name="rack_number" class="form-control" required>
+                                {% for rack in racks %}
+                                {% if rack in book.rack_number.all %}
+                                <option value="{{ rack.id }}" selected>{{ rack.name }}</option>
+                                {% else %}
+                                <option value="{{ rack.id }}">{{ rack.name }}</option>
+                                {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>No of Actual Copies</label>
+                            <input name="no_of_copies_actual" value="{{ book.no_of_copies_actual }}" type="text"
+                                   class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>No of Copies Current</label>
+                            <input readonly name="no_of_copies_current" value="{{ book.no_of_copies_current }}"
+                                   type="text" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>Book Cover Image</label>
+                            {% if book.cover_image %}
+                            <img hidden name="cover_image_url" src="{{ book.cover_image.url }}">
+                            {% else %}
+                            <input type="file" name="cover_image">
+                            {% endif %}
+
+                        </div>
+                        <div>
+                            <input type="hidden" name="book_qr_code" value="{{ book.book_qr_code.url }}">
+                        </div>
+                        <!-- Add other book fields as needed -->
+                    </div>
+                    <div class="modal-footer">
+                        <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
+                        <input type="submit" class="btn btn-info" value="Update">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<!-- Delete Book Modal HTML -->
+{% for book in book_obj %}
+<div id="deleteBookModal-{{ forloop.counter }}" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="/books/delete_book/{{book.id}}" method="POST">
+
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h4 class="modal-title">Delete Book</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete the book "{{ book.book_title }}"?</p>
+                    <p class="text-warning"><small>This action cannot be undone.</small></p>
+                </div>
+                <div>
+                    {% if book.cover_image %}
+                    <img type="hidden" name="book_cover_image" value="{{ book.cover_image.url }}">
+                    {% else %}
+                    <input type="hidden" name="book_cover_image" value="NO_COVER_IMG">
+                    {% endif %}
+
+                    {% if book.book_qr_code %}
+                    <input type="hidden" name="book_qr_code" value="{{ book.book_qr_code.url }}">
+                    {% else %}
+                    <<input type="hidden" name="book_qr_code" value="NO_QR_CODE_IMG">
+                    {% endif %}
+                </div>
+                <div class="modal-footer">
+                    <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
+                    <input type="submit" class="btn btn-danger" value="Delete">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<!-- View Book Modal HTML -->
+{% for book in book_obj %}
+<div id="viewBookModal-{{ forloop.counter }}" class="modal fade">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form action="/books/view_book/{{book.book_id}}" method="POST">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h4 class="modal-title">View Book</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+                <div class="modal-body">
+
+                    <div class="row">
+                        <div class="col-sm">
+                            <div class="form-group">
+                                <label>Title</label>
+                                <input readonly name="book_title" value="{{ book.book_title }}" type="text"
+                                       class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-sm">
+                            <div class="form-group">
+                                <label>Author</label>
+                                <input readonly name="book_author" value="{{ book.book_author.name }}" type="text"
+                                       class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-sm">
+                            <div class="form-group">
+                                <label>Book Language</label>
+                                <input readonly name="book_language" value="{{ book.book_language }}" type="text"
+                                       class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm">
+                            <div class="form-group">
+                                <label>Category</label><br>
+                                {% for category in book.categories.all %}
+                                {{ category.name }}
+                                {% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="col-sm">
+                            <div class="form-group">
+                                <label>Subcategory</label>
+                                {% for subcategory in book.sub_category.all %}
+                                {{ subcategory.name }}
+                                {% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="col-sm">
+                            <div class="form-group">
+                                <label>Book Price</label>
+                                <input readonly name="book_price" value="{{ book.book_price }}" type="text"
+                                       class="form-control">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm">
+                            <div class="form-group">
+                                <label>Publish Date</label>
+                                <input readonly name="publish_date" value="{{ book.publish_date }}" type="text"
+                                       class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-sm">
+                            <div class="form-group">
+                                <label>Publisher</label>
+                                <input readonly name="publisher" value="{{ book.publisher }}" type="text"
+                                       class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-sm">
+                            <div class="form-group">
+                                <label>ISBN</label>
+                                <input readonly name="isbn" value="{{ book.isbn }}" type="text" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm">
+                            <div class="form-group">
+                                <label>Review</label>
+                                <input readonly name="book_reviews" value="{{ book.book_reviews }}" type="text"
+                                       class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-sm">
+                            <div class="form-group">
+                                <label>Book Rating</label>
+                                <input readonly name="book_rating" value="{{ book.rating }}" type="text"
+                                       class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-sm">
+                            <div class="form-group">
+                                <label>Status</label>
+                                {% if book.status %}
+                                <input readonly name="status" value="Available" type="text" class="form-control">
+                                {% else %}
+                                <input readonly name="status" value="Not Available" type="text" class="form-control">
+                                {% endif %}
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-sm">
+                            <div class="form-group">
+                                <label>Rack Name/Number</label>
+                                <input readonly name="rack_number" value="{{ book.rack_number }}" type="text"
+                                       class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-sm">
+                            <div class="form-group">
+                                <label>Number of Copies Actual (Total)</label>
+                                <input readonly name="no_of_copies_actual" value="{{ book.no_of_copies_actual }}"
+                                       type="text" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-sm">
+                            <div class="form-group">
+                                <label>Number of Copies Current</label>
+                                <input readonly name="no_of_copies_current" value="{{ book.no_of_copies_current }}"
+                                       type="text" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label>Book Description</label>
+                        <input readonly name="book_description" value="{{ book.description }}" type="text"
+                               class="form-control">
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <label>Book QR Code</label>
+                            <img src={{book.book_qr_code.url}} width="200" height="200">
+                        </div>
+                        <div class="col-6">
+                            <label>Book Cover Image</label>
+                            {% if book.cover_image %}
+                            <img src="{{ book.cover_image.url }}" width="200" height="200" alt="Cover Image">
+                            {% else %}
+                            <img src="{% static 'images/avatar1.png' %}" width="200" height="200"
+                                 alt="No Cover Image available">
+                            {% endif %}
+                        </div>
+                    </div>
+                    <!-- Display other book fields as needed -->
+                </div>
+                <div class="modal-footer">
+                    <input type="button" class="btn btn-default" data-dismiss="modal" value="Close">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    $('#viewBookModal-{{ forloop.counter }}').on('shown.bs.modal', function () {
+  $(this).find('.modal-dialog').first().focus();
+});
+
+</script>
+{% endfor %}
+
+<!-- Review QR Code Modal HTML -->
+{% for book in book_obj %}
+<div id="qrcodeBookModal-{{forloop.counter}}" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="/books/view_bookqrcode/{{book.id}}" method="POST">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h4 class="modal-title">View Book QR Code</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Book Title</label>
+                        <input readonly name="book_title" value="{{ book.book_title }}" type="text"
+                               class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Book Id</label>
+                        <input readonly name="book_id" value="{{ book.book_id }}" type="text" class="form-control">
+                    </div>
+                    <div>
+                        <label>QR Code</label>
+                        <img src={{book.book_qr_code.url}} width="250" height="250">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="button" class="btn btn-default" data-dismiss="modal" value="Close">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+{% else %}
+<div class="w3-third">
+    <h5>Static Data</h5>
+    <p>This is a static block when no one is logged in.</p>
+    <img src="{% static 'images/region.jpg' %}" style="width:100%" alt="Google Regional Map">
+</div>
+
+{% endif %}
+{% endblock %}

@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+{% block content %}
+<!-- Add ur Dynamic Content here -->
+<!-- Header -->
+{% if user.id is not None %}
+
+<header class="w3-container" style="padding-top:22px">
+    <h5><b><i class="fa fa-dashboard"></i>Transaction</b></h5>
+</header>
+{% include 'includes/alerts.html' %}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-6">
+            <a href="{% url 'borrow_book' %}">
+                <button type="button" class="btn btn-primary btn-lg btn-block"><i class="fa fa-cloud-upload"
+                                                                                  style="font-size:30px;color:white">Borrow
+                    Book</i></button>
+            </a>
+        </div>
+        <div class="col-lg-6">
+            <a href="{% url 'return_book' %}">
+                <button type="button" class="btn btn-success btn-lg btn-block"><i class="fa fa-cloud-download"
+                                                                                  style="font-size:30px;color:white">Return
+                    Book</i></button>
+            </a>
+        </div>
+    </div>
+</div>
+
+
+<hr>
+<div class="container-fluid">
+
+    <div class="row">
+        <div class="col"><h3>Borrow Transaction</h3>
+            <div class="table-container">
+                <table class="table table-dark table-hover">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Title of the Book</th>
+                        <th>Name of Borrower</th>
+                        <th>Date of Transaction</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for transaction in borrow_transaction_obj %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ transaction.book.book_title}}</td>
+                        <td>{{ transaction.user.first_name }} {{ transaction.user.last_name }}</td>
+                        <td>{{ transaction.borrow_date}}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="col"><h3>Return Transaction</h3>
+            <div class="table-container">
+                <table class="table table-dark table-hover">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Title of the Book</th>
+                        <th>Name of Return User</th>
+                        <th>Date of Transaction</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for transaction in return_transaction_obj %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ transaction.book.book_title}}</td>
+                        <td>{{ transaction.user.first_name }} {{ transaction.user.last_name }}</td>
+                        <td>{{ transaction.return_date}}</td>
+                    </tr>
+                    {% endfor %}
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+
+<hr>
+{% else %}
+<div class="w3-third">
+    <h5>Regions</h5>
+    <img src="{% static 'images/region.jpg' %}" style="width:100%" alt="Google Regional Map">
+</div>
+
+{% endif %}
+{% endblock %}

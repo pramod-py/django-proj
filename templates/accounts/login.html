@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+  {% if request.GET.command == 'verification' %}
+
+  <div class="container mx-auto alert alert-info text-center" role="alert" style="max-width: 1024px; margin-top:100px;">
+    Thank you for registering with us. We have sent you a verification email to your email address [{{ request.GET.email }}]
+    <br><br>
+    Already verified? <a href="{% url 'login' %}">Login</a>
+    </div>
+    
+    {% else %}
+
+  <h2>Login</h2>
+  {% include 'includes/alerts.html' %}
+  <form action="{% url 'login' %}" method="POST">
+    {% csrf_token %}
+    <div class="form-group">
+      <input type="email" class="form-control" placeholder="Email Address" name="email">
+         </div> <!-- form-group// -->
+         <div class="form-group">
+     <input type="password" class="form-control" placeholder="Password" name="password">
+         </div> <!-- form-group// -->
+      <div class="form-group form-check">
+          <input type="checkbox" class="form-check-input" id="rememberMe">
+          <label class="form-check-label" for="rememberMe">Remember me</label>
+      </div>
+      <button type="submit" class="btn btn-primary">Login</button>
+      <p class="text-left mt-4 ">Don't have account? <a href="{% url 'register' %}">Sign up</a></p>
+      <p class="text-left mt-4 ">Forgot Password <a href="{% url 'forgotPassword' %}">Click Here</a></p>
+  </form>
+</div>
+
+<br><br>
+{% endif %}
+{% endblock %}

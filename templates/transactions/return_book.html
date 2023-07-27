@@ -1,0 +1,268 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<!-- Add ur Dynamic Content here -->
+<!-- Header -->
+{% if user.id is not None %}
+<header class="w3-container" style="padding-top:22px">
+    <h5><b><i class="fa fa-dashboard"></i>Return Book</b></h5>{% include 'includes/alerts.html' %}
+</header>
+
+
+<div class="container" style="border: 2px solid black;">
+    <div class="row">
+        <!-- First Column -->
+        <div class="col-md-6">
+            <div>
+                <h4>Book Info:</h4>
+                <div class="text-left">
+                    <video id="book_video" autoplay style="width: 50%; height: 250; max-width: 300px; margin-bottom: 10px;"></video>
+                    <canvas id="book_canvas" style="display: none;"></canvas>
+                    <div id="book_result"></div>
+                    <br>
+                    <button class="btn btn-warning" id="book_scanButton" onclick="book_toggleScanning()">Scan</button>
+                </div>
+                <form method="POST" class="form-inline">
+                    <div class="form-group">
+                        <label for="bookId">Book ID:</label>
+                        <input id="book_query" name="book_query" type="text" class="form-control"
+                               placeholder="Enter Book ID">
+                    </div>
+                    <div id="book_id_error" style="color: red; font-weight: bold;"></div>
+                </form>
+            </div>
+
+
+        </div>
+        </br>
+        <!-- Second Column -->
+        <div class="col-md-6">
+            <div>
+                <h4>Book Info:</h4>
+                <br>
+                <label for="nobookdata" id="nobookdata" style="color: red; font-weight: bold;"></label>
+
+                <div class="form-group">
+                    <label for="bookId">Book ID:</label>
+                    <input readonly type="text" class="form-control" id="bookId" placeholder="Enter Book ID"
+                           style="color: blue; font-weight: bold;">
+                </div>
+                <div class="form-group">
+                    <label for="bookTitle">Book Title:</label>
+                    <input readonly type="text" class="form-control" id="bookTitle" placeholder="Enter Book Title"
+                           style="color: blue; font-weight: bold;">
+                </div>
+                <div class="form-group">
+                    <label for="author">NO OF COPIES </label>
+                    <input readonly type="text" class="form-control" id="author" placeholder="Enter Author"
+                           style="color: blue; font-weight: bold;">
+                </div>
+                <div class="form-group">
+                    <label for="language">Language:</label>
+                    <input readonly type="text" class="form-control" id="language" placeholder="Enter Language"
+                           style="color: blue; font-weight: bold;">
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<form action="{% url 'return_book' %}" method="POST" class="form-inline">
+    {% csrf_token %}
+    <div class="container">
+        <div class="text-center">
+
+            <input class="form-control" type="text" id="book_id_data" name="book_id_data" required pattern=".*\S+.*"
+                   readonly title="This field is required.">
+        </div>
+        <br>
+        <div class="text-center">
+            <a href="{% url 'transaction' %}">
+                <button type="button" class="btn btn-secondary">Cancel</button>
+            </a>
+            <button type="submit" class="btn btn-success" onclick="validateForm()">Return</button>
+            <div id="tooltip" style="display: none; position: absolute; background-color: #f9f9f9; padding: 5px; border: 1px solid #ccc; border-radius: 4px; z-index: 9999;"></div>
+        </div>
+    </div>
+</form>
+<!-- empty field validation while return btn click-->
+<script>
+    function validateForm() {
+
+        const bookIdInput = document.getElementById('book_id_data');
+        const tooltipElement = document.getElementById('tooltip');
+
+
+
+        if (bookIdInput.value.trim() === '') {
+            bookIdInput.style.borderColor = 'red';
+            tooltipElement.innerHTML = "This field is required.";
+            tooltipElement.style.display = 'block';
+            tooltipElement.style.left = bookIdInput.offsetLeft + bookIdInput.offsetWidth + 'px';
+            tooltipElement.style.top = bookIdInput.offsetTop + 'px';
+            event.preventDefault(); // Prevent form submission
+        } else {
+            bookIdInput.style.borderColor = '';
+            tooltipElement.style.display = 'none';
+        }
+    }
+
+</script>
+<!--validate insert only numeric value in book_id input field-->
+<script>
+    const bookIdField = document.getElementById('book_query');
+    const bookIdErrorDiv = document.getElementById('book_id_error');
+
+    bookIdField.addEventListener('keyup', function() {
+        const bookIdValue = bookIdField.value.trim();
+        const isNumeric = /^\d+$/.test(bookIdValue);
+
+        if (!isNumeric) {
+            bookIdErrorDiv.textContent = "Please enter a numeric value for Book ID.";
+        } else {
+            bookIdErrorDiv.textContent = "";
+        }
+    });
+</script>
+
+<hr>
+
+<script>
+
+//----------------------get book data using text box input-----------------------
+
+    const book_searchField = document.querySelector("#book_query");
+    const nobookdata = document.querySelector("#nobookdata");
+
+    book_searchField.addEventListener("input", (e) => {
+    const book_searchValue =e.target.value;
+    if (book_searchValue.trim().length>0){
+        console.log("searchValue", book_searchValue)
+
+       fetch("/transaction/fetch_book_info/", {
+            body: JSON.stringify({searchText: book_searchValue}),
+            method:"POST",
+       })
+       .then((res) => res.json())
+       .then((data) => {
+
+
+            if (data.length == 0) {
+              nobookdata.innerHTML = "No Result Found!";
+              $("#bookTitle").val("");
+              $("#bookId").val("");
+              $("#author").val("");
+              $("#language").val("");
+
+            } else {
+             // console.log("data", data);
+              nobookdata.innerHTML = ""; // Clear the error message
+              const book = data[0]; // Assuming you only get one user object in the array
+
+                $("#bookTitle").val(book.book_title);
+                $("#bookId").val(book.book_id);
+                $("#author").val(book.no_of_copies_current);
+                $("#language").val(book.book_language);
+                $("#book_id_data").val(book.book_id);
+
+
+            }
+        })
+    }
+    });
+
+
+</script>
+
+<!--scanner script-->
+<script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
+
+<!-------------Scanner code to get book value --------------->
+<script>
+  const bookVideo = document.getElementById('book_video');
+  const bookCanvas = document.getElementById('book_canvas');
+  const bookContext = bookCanvas.getContext('2d');
+  const bookResultDiv = document.getElementById('book_result');
+  const bookScanButton = document.getElementById('book_scanButton');
+  let bookScanning = false;
+  let bookScanningTimeout;
+
+  // Function to toggle book scanning on/off
+  function book_toggleScanning() {
+    if (bookScanning) {
+      book_stopScanning();
+    } else {
+      book_startScanning();
+    }
+  }
+
+  // Function to start book scanning
+  function book_startScanning() {
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+      .then(stream => {
+        bookVideo.srcObject = stream;
+        bookScanButton.textContent = 'End Scanning';
+        bookScanning = true;
+        book_startScanningLoop();
+      })
+      .catch(error => console.error('Error accessing camera:', error));
+  }
+
+  // Function to stop book scanning
+  function book_stopScanning() {
+    bookScanButton.textContent = 'Scan';
+    bookScanning = false;
+    clearTimeout(bookScanningTimeout);
+    if (bookVideo.srcObject) {
+      bookVideo.srcObject.getTracks().forEach(track => track.stop());
+    }
+    bookContext.clearRect(0, 0, bookCanvas.width, bookCanvas.height);
+  }
+
+  // Function to start book scanning loop
+  function book_startScanningLoop() {
+    if (bookScanning) {
+      bookScanningTimeout = setTimeout(() => {
+        book_displayResult('Unable to scan QR code.');
+      }, 10000);
+      book_scanQRCode();
+    }
+  }
+
+  // Function to scan QR codes for book
+  function book_scanQRCode() {
+    bookContext.drawImage(bookVideo, 0, 0, bookCanvas.width, bookCanvas.height);
+    const bookImageData = bookContext.getImageData(0, 0, bookCanvas.width, bookCanvas.height);
+    const bookCode = jsQR(bookImageData.data, bookImageData.width, bookImageData.height);
+
+    if (bookCode) {
+      book_displayResult('QR Code detected: ' + bookCode.data);
+      const scannedData = bookCode.data.split("$")[0];
+      document.querySelector("#book_query").value = scannedData;
+
+      // Create and dispatch an 'input' event
+      const bookInputField = document.querySelector("#book_query");
+      const bookInputEvent = new Event("input", { bubbles: true, cancelable: true });
+      bookInputField.dispatchEvent(bookInputEvent);
+
+      book_stopScanning();
+    } else {
+      requestAnimationFrame(book_scanQRCode);
+    }
+  }
+
+  // Function to display the scanning result for book
+  function book_displayResult(message) {
+    bookResultDiv.textContent = message;
+  }
+
+</script>
+{% else %}
+<div class="w3-third">
+    <h5>Regions</h5>
+    <img src="{% static 'images/region.jpg' %}" style="width:100%" alt="Google Regional Map">
+</div>
+
+{% endif %}
+{% endblock %}

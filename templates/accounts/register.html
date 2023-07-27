@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% include 'includes/alerts.html' %}
+<div class="container">
+    <h2>Registration Form</h2>
+  
+    <form action="{% url 'register' %}" method="POST">
+        {% csrf_token %}
+        <div class="form-row">
+            <div class="form-group col-md-3">
+                <label for="firstName">First Name</label>
+                {{form.first_name}}
+            </div>
+            <div class="form-group col-md-3">
+                <label for="lastName">Last Name</label>
+                {{form.last_name}}
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-3">
+            <label for="email">Email</label>
+            {{form.email}}
+            </div>
+            <div class="form-group col-md-3">
+            <label for="phoneNumber">Phone Number</label>
+            {{form.phone_number}}
+            </div>
+        </div>
+        <!--
+        <div class="form-group">
+            <label>Gender</label><br>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="gender" id="male" value="male" required>
+                <label class="form-check-label" for="male">Male</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="gender" id="female" value="female" required>
+                <label class="form-check-label" for="female">Female</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="address">Address</label>
+            <textarea class="form-control col-5" id="address" placeholder="Enter Address" required></textarea>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-3">
+                <label for="pincode">Pin Code</label>
+                <input type="text" class="form-control" id="pincode" placeholder="Enter Pin Code" required>
+            </div>
+            <div class="form-group col-md-3">
+                <label for="state">State</label>
+                <select id="state" class="form-control" required>
+                    <option value="">Select State</option>
+                    <option value="Maharashtra">Maharashtra</option>
+                    <option value="Gujarat">Gujarat</option>
+                    <option value="Karnataka">Karnataka</option>
+                    
+                </select>
+            </div>
+        </div>
+        -->
+        <div class="form-row">
+            <div class="form-group col-md-3">
+                <label for="password">Password</label>
+                {{form.password}}
+            </div>
+            <div class="form-group col-md-3">
+                <label for="confirmPassword">Confirm Password</label>
+                {{form.confirm_password}}
+            </div>
+        </div>
+        {{form.email.errors}}
+        {{form.non_field_errors}}
+        <button type="submit" class="btn btn-primary">Register</button>
+    </form>
+    <div class="text-left mt-3">
+        <p>Have an account? <a href="{% url 'login' %}">Log in</a></p>
+    </div>
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+{% if user.id is None %}
+    {% comment %} Redirect to login.html {% endcomment %}
+    <script>
+        window.location.href = "{% url 'login' %}";
+    </script>
+{% else %}
+    {% comment %} Redirect to home.html {% endcomment %}
+    <script>
+        window.location.href = "{% url 'home' %}";
+    </script>
+{% endif %}
+
+
+{% endblock %}
