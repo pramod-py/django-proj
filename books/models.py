@@ -93,37 +93,25 @@ class DB_Books(models.Model):
         #     self.availability = 'Not Available'
 
         # Save Default QR Code
-        qr_code_data = f'{self.book_id}${self.book_title}'
-        qrcode_img = qrcode.make(qr_code_data)
-        canvas = Image.new('RGB', (290, 290), 'white')
-        canvas.paste(qrcode_img)
-        fname = f'{self.book_id}_{self.book_title}.png'
-        buffer = BytesIO()
-        canvas.save(buffer, 'PNG')
-        print(qr_code_data)
-        print(fname)
-        self.book_qr_code.save(fname, File(buffer), save=False)
-        canvas.close()
+        if not self.book_qr_code:
+            qr_code_data = f'{self.book_id}${self.book_title}'
+            qrcode_img = qrcode.make(qr_code_data)
+            canvas = Image.new('RGB', (290, 290), 'white')
+            canvas.paste(qrcode_img)
+            fname = f'{self.book_id}_{self.book_title}.png'
+            buffer = BytesIO()
+            canvas.save(buffer, 'PNG')
+            self.book_qr_code.save(fname, File(buffer), save=False)
+            canvas.close()
         super().save(*args, **kwargs)
 
-    # def delete(self, *args, **kwargs):
-    #     # Delete the media files before deleting the record
-    #     print('*************************************')
-    #     print(self.cover_image.path)
-    #     if self.cover_image:
-    #         try:
-    #             os.remove(self.cover_image.path)
-    #         except FileNotFoundError as e:
-    #             # Handle the exception (e.g., log an error or display a message)
-    #             print(f'file not found{e}')
-    #     print(self.book_qr_code.path)
-    #
-    #     if self.book_qr_code:
-    #         # Remove the book QR code file
-    #         os.remove(self.book_qr_code.path)
-    #
-    #     # Call the superclass delete() method to delete the record
-    #     super(DB_Books, self).delete(*args, **kwargs)
+    def delete(self, *args, **kwargs):
+        # Check if the user has a QR code image and delete it
+        if self.book_qr_code:
+            file_path = Path(self.book_qr_code.path)
+            if file_path.exists():
+                file_path.unlink()
+        super().delete(*args, **kwargs)
 
 
 class Borrower_Details(models.Model):

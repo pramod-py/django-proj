@@ -81,9 +81,7 @@ def edituser(request):
 
 
 def updateuser(request, id):
-    #  import pdb;pdb.set_trace()
-    #  print(id, request.method)
-     if request.method == 'POST':
+    if request.method == 'POST':
         first_name = request.POST.get('first_name')
         last_name = request.POST.get('last_name')
         email = request.POST.get('email')
@@ -93,7 +91,7 @@ def updateuser(request, id):
         # Find the user object to update
         user_obj = Users.objects.get(id=id)
 
-        qr_code_url = request.POST.get('qr_code')  # Get the image URL
+        # qr_code_url = request.POST.get('qr_code')  # Get the image URL
  
         user_obj = Users.objects.get(id=id)
         
@@ -103,48 +101,46 @@ def updateuser(request, id):
         user_obj.email = email
         user_obj.address = address
         user_obj.phone_number = phone_number
-        file_path = 'C:\\Users\\admin\\Downloads\\lmsys\\'+ qr_code_url
-        file_path = Path(file_path)
-        # BASE_DIR = Path(__file__).resolve().parent.parent
-        # print(BASE_DIR)
-        # print('----------------------')
-        # file_path = BASE_DIR / qr_code_url
-        if file_path.exists():
-            file_path.unlink()
+        # file_path = 'C:\\Users\\admin\\Downloads\\lmsys\\' + qr_code_url
+        # file_path = Path(file_path)
+        #
+        # if file_path.exists():
+        #     file_path.unlink()
 
-        # user_obj = Users(id=id, first_name=first_name, last_name=last_name, email=email, phone_number=phone_number, address=address)
         user_obj.save()
         messages.success(request, 'User record Updated successfully!')
         return redirect('/users/manageuser')
 
-def deleteuser(request,id):
+
+def deleteuser(request, id):
     if request.method == 'POST':
         user_obj = Users.objects.filter(id=id)
         user_obj.delete()
         messages.success(request, 'User record deleted successfully!')
-        context = {'USER_OBJ':user_obj}
+        context = {'USER_OBJ': user_obj}
         return redirect('/users/manageuser')
-    
+
+
 def viewuser(request):
     user_obj = Users.objects.all()
-    context = {'user_obj':user_obj}
+    context = {'user_obj': user_obj}
     return redirect(request, '/users/manageuser', context)
+
 
 # viewuserqrcode
 def viewuserqrcode(request):
     user_obj = Users.objects.all()
-    context = {'user_obj':user_obj}
+    context = {'user_obj': user_obj}
     return redirect(request, '/users/manageuser', context)
+
 
 def searchuser(request):
     user_obj = Users.objects.all()
 
     search_contains = request.GET.get('search_contains')
     
-    if search_contains!='' and search_contains is not None:
+    if search_contains != '' and search_contains is not None:
         user_obj = user_obj.filter(first_name__icontains=search_contains) 
 
-    context = {'user_obj':user_obj}
-
-
+    context = {'user_obj': user_obj}
     return redirect(request, '/users/manageuser', context)

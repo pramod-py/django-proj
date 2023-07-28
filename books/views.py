@@ -211,14 +211,11 @@ def update_book(request, id):
         # Update the rack numbers
         book_obj.rack_number.set(rack_numbers)
 
-        file_path = 'C:\\Users\\admin\\Downloads\\lmsys\\' + book_qr_code_url
-        file_path = Path(file_path)
-        # BASE_DIR = Path(__file__).resolve().parent.parent
-        # print(BASE_DIR)
-        # print('----------------------')
-        # file_path = BASE_DIR / qr_code_url
-        if file_path.exists():
-            file_path.unlink()
+        # file_path = 'C:\\Users\\admin\\Downloads\\lmsys\\' + book_qr_code_url
+        # file_path = Path(file_path)
+        #
+        # if file_path.exists():
+        #     file_path.unlink()
 
         book_obj.save()
         messages.success(request, 'Book data updated successfully!')
