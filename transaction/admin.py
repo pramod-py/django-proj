@@ -5,8 +5,8 @@ from .models import Transaction
 
 
 class TransactionAdmin(admin.ModelAdmin):
-    list_display = ('transaction_id', 'book_id', 'book_title', 'user_name', 'user_phone', 'borrow_date', 'return_date',
-                    'is_returned', 'date_added')
+    list_display = ('transaction_id', 'book_id', 'book_title', 'user_name', 'user_phone', 'librarian_name',
+                    'borrow_date', 'return_date', 'is_returned', 'date_added')
 
     def book_id(self, obj):
         return obj.book.book_id

@@ -61,6 +61,7 @@
                 <th>Email</th>
                 <!--                          <th>Address</th>-->
                 <th>Phone</th>
+                <th>Borrowed Book Count</th>
                 <th>Status</th>
                 <th>Actions</th>
             </tr>
@@ -79,6 +80,7 @@
                 <td>{{ user.email }}</td>
                 <!--                          <td>{{ user.address }}</td>-->
                 <td>{{ user.phone_number }}</td>
+                <td>{{ user.number_of_books_borrowed }}</td>
                 <td>
                     {% if user.is_active %}
                     <span><i class="material-icons" data-toggle="tooltip" title="Active" style="color:MediumSeaGreen;">check_circle</i></span>

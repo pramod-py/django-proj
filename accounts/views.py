@@ -25,7 +25,7 @@ def register(request):
             email = form.cleaned_data['email'] 
             phone_number = form.cleaned_data['phone_number'] 
             password = form.cleaned_data['password'] 
-            username=email.split('@')[0]
+            username = email.split('@')[0]
 
 
             user = Account.objects.create_user(first_name=first_name, last_name=last_name, email=email,  username=username, password=password)
@@ -51,7 +51,7 @@ def register(request):
             return redirect('register')
     else:
         form = RegistrationForm()
-    context = {'form':form}
+    context = {'form': form}
     return render(request, 'accounts/register.html', context)
 
 
@@ -59,9 +59,8 @@ def login(request):
     if request.method == 'POST':
         email = request.POST['email']
         password = request.POST['password']
-        print(email,password)
         user = auth.authenticate(email=email, password=password)
-        print(user)
+
         if user is not None:
             auth.login(request, user)
             messages.success(request, 'Login successful')
@@ -72,11 +71,13 @@ def login(request):
 
     return render(request, 'accounts/login.html')
 
+
 @login_required(login_url='login')
 def logout(request):
     auth.logout(request)
     messages.success(request, 'You are logged out!')
     return redirect('login')
+
 
 def activate(request, uidb64, token):
     try:
@@ -120,7 +121,6 @@ def forgotPassword(request):
             messages.error(request, 'Account does not exist!')
             return redirect('forgotPassword')
     return render(request, 'accounts/forgotPassword.html')
-
 
 
 def resetpassword_validate(request, uidb64, token):

@@ -14,6 +14,8 @@ class Transaction(models.Model):
     is_returned = models.BooleanField(default=False)
     date_added = models.DateTimeField(default=timezone.now)
     date_created = models.DateTimeField(auto_now=True)
+    librarian_name = models.CharField(max_length=20)
+    transaction_type = models.CharField(max_length=20, default='')
 
     def __str__(self):
         return f'Transaction ID: {self.transaction_id} - User: {self.user.phone_number} - Book: {self.book.book_id}'
@@ -21,8 +23,9 @@ class Transaction(models.Model):
     def save(self, *args, **kwargs):
         if self.is_returned and not self.return_date:
             self.return_date = timezone.now()
-            self.book.no_of_copies_current += 1  # Increment the number of copies
+            # self.book.no_of_copies_current += 1  # Increment the number of copies
         elif not self.is_returned:
-            self.book.no_of_copies_current -= 1  # Decrement the number of copies
-        self.book.save()
+            pass
+            # self.book.no_of_copies_current -= 1  # Decrement the number of copies
+        # self.book.save()
         super().save(*args, **kwargs)

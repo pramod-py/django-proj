@@ -9,6 +9,8 @@ import json
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
+# from accounts.models import Account
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 
@@ -50,6 +52,7 @@ def fetch_book_info(request):
             return JsonResponse(list(data), safe=False)
 
 
+
 def borrow_book_old(request):
     if request.method == 'POST':
         phone_number = request.POST.get('user_phone_number_data')
@@ -85,6 +88,7 @@ def borrow_book_old(request):
         return render(request, 'transactions/borrow_book.html', context)
 
 
+@login_required
 def return_book(request):
     if request.method == 'POST':
 
@@ -99,11 +103,15 @@ def return_book(request):
             return_transaction_obj = Transaction.objects.get(book=book_instance, is_returned=False)
 
             # # update user book_borrowed_status = False
-            # user_obj = Users.objects.get(phone_number=return_transaction_obj.user.phone_number)
-            # user_obj.borrowed_book_status = False
+            user_obj = Users.objects.get(phone_number=return_transaction_obj.user.phone_number)
+            user_obj.number_of_books_borrowed -= 1
+            user_obj.save()
 
             return_transaction_obj.is_returned = True
             return_transaction_obj.return_date = timezone.now()
+            # Get Login librarian first name
+            return_transaction_obj.librarian_name = request.user.first_name
+
             return_transaction_obj.save()
             messages.success(request, f'Return book {book_id}\' record Updated successfully!')
             borrow_transaction_obj = Transaction.objects.filter(is_returned=False,
@@ -119,7 +127,7 @@ def return_book(request):
 
     return render(request, 'transactions/return_book.html')
 
-
+@login_required
 def borrow_book(request):
     if request.method == 'POST':
         phone_number = request.POST.get('user_phone_number_data')
@@ -140,10 +148,14 @@ def borrow_book(request):
         user_instance = get_object_or_404(Users, phone_number=phone_number)
         book_instance = get_object_or_404(DB_Books, book_id=book_id)
         transaction_obj = Transaction(user=user_instance, book=book_instance)
+        transaction_obj.transaction_type = 'borrow'
+        # Get Login librarian first name
+        transaction_obj.librarian_name = request.user.first_name
         transaction_obj.save()
-        # #update user book_borrowed_status = True
-        # user_obj = Users.objects.get(phone_number=phone_number)
-        # user_obj.borrowed_book_status = True
+        #update user borrowed book count
+        user_obj = Users.objects.get(phone_number=phone_number)
+        user_obj.number_of_books_borrowed += 1
+        user_obj.save()
 
         # Redirect to transaction page after successful form submission
         messages.info(request, f'Borrowing {book_id}\'s record added successfully!')

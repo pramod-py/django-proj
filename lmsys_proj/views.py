@@ -8,7 +8,7 @@ from books.models import *
 
 
 def home(request):
-    user_obj = Users.objects.filter(is_active=False)
+    user_obj = Users.objects.filter(is_active=True)
     total_active_user = user_obj.count()
     available_book_obj = DB_Books.objects.filter(status=True)
     available_book_count = available_book_obj.count()

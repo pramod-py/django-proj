@@ -96,7 +96,7 @@ class DB_Books(models.Model):
         if not self.book_qr_code:
             qr_code_data = f'{self.book_id}${self.book_title}'
             qrcode_img = qrcode.make(qr_code_data)
-            canvas = Image.new('RGB', (290, 290), 'white')
+            canvas = Image.new('RGB', (350, 350), 'white')
             canvas.paste(qrcode_img)
             fname = f'{self.book_id}_{self.book_title}.png'
             buffer = BytesIO()

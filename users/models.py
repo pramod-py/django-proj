@@ -5,7 +5,7 @@ from django.core.files import File
 from PIL import Image, ImageDraw
 import os
 from django.core.files.base import ContentFile
-
+from pathlib import Path
 # Create your models here.
 
 
@@ -19,6 +19,7 @@ class Users(models.Model):
     is_active = models.BooleanField(default=False)
     borrowed_book_status = models.BooleanField(default=False)
     borrowed_book_id = models.CharField(max_length=20, default='00')
+    number_of_books_borrowed = models.IntegerField(default=0)
 
     def __str__(self):
         return f'{self.email} {self.first_name} {self.last_name}'
@@ -52,7 +53,7 @@ class Users(models.Model):
     #
     #         # Check if the phone_number or borrowed_book_id has changed
     #         if not previous_qr_code or self.phone_number != previous_user_obj.phone_number:
-    #             # If the phone_number or borrowed_book_id has changed or no previous QR code exists, create a new QR code
+    #             # If the phone_number or no previous QR code exists, create a new QR code
     #             qr_code_data = f'{self.phone_number}${self.borrowed_book_id}'
     #             qrcode_img = qrcode.make(qr_code_data)
     #             canvas = Image.new('RGB', (290, 290), 'white')
@@ -70,6 +71,13 @@ class Users(models.Model):
     #     super().save(*args, **kwargs)
     # final logic for qr_code save if not if yes dont do anything
     def save(self, *args, **kwargs):
+
+        # Condition to check user status is_active
+        if self.number_of_books_borrowed > 0:
+            self.is_active = True
+        else:
+            self.is_active = False
+
         # Check if the user already has a QR code image
         if not self.qr_code:
             # Create a new QR code for new users
@@ -87,7 +95,10 @@ class Users(models.Model):
 
     def delete(self, *args, **kwargs):
         # Check if the user has a QR code image and delete it
+        print(self.qr_code)
+        print(self.qr_code.path)
         if self.qr_code:
+            print('inside iof')
             file_path = Path(self.qr_code.path)
             if file_path.exists():
                 file_path.unlink()
