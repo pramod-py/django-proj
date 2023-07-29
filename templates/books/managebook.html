@@ -4,6 +4,8 @@
 <!-- Add your dynamic content here -->
 <!-- Header -->
 {% if user.id is not None %}
+
+
 <header class="w3-container" style="padding-top:22px">
     <h5><b><i class="fa fa-dashboard"></i> Manage Books</b></h5>
 </header>
@@ -58,9 +60,12 @@
                         </span>
                     </td>-->
                     <td>{{ forloop.counter }}</td>
-                    <td>{{ book.book_id }}</td>
-                    <td>{{ book.book_title }}</td>
-                    <td>{{ book.book_author.name }}</td>
+                    <td>
+                        <label id="myInput" data-book-id="{{ book.book_id }}">{{ book.book_id }}</label>
+                    </td>
+
+                    <td>{{ book.book_title|capfirst }}</td>
+                    <td>{{ book.book_author.name|capfirst }}</td>
                     <td>
                         {% for category in book.categories.all %}
                         {{ category.name }}
@@ -76,7 +81,7 @@
                     <td>{{ book.book_language }}</td>
                     <td>
                         {% for rack_number in book.rack_number.all %}
-                        {{ rack_number.name }}
+                        {{ rack_number.name|capfirst }}
                         {% if not forloop.last %}, {% endif %}
                         {% endfor %}
 
@@ -188,10 +193,10 @@
                                 <option value="English">English</option>
                             </select>
                         </div>
-                        <div class="form-group">
-                            <label>Number of Copies</label>
-                            <input name="no_of_copies_actual" type="text" class="form-control" required>
-                        </div>
+<!--                        <div class="form-group">-->
+<!--                            <label>Number of Copies</label>-->
+<!--                            <input name="no_of_copies_actual" type="text" class="form-control" required>-->
+<!--                        </div>-->
                         <div class="form-group">
                             <label>Rack Name</label>
                             <select name="rack_number" class="form-control" required>
@@ -245,8 +250,7 @@
             document.getElementById("new-author-input").style.display = "none";
         }
     });
-
-        </script>
+ </script>
 
     </div>
 
@@ -270,7 +274,7 @@
                         </div>
                         <div class="form-group">
                             <label>Book Title</label>
-                            <input readonly name="book_title" value="{{ book.book_title }}" type="text"
+                            <input readonly name="book_title" value="{{ book.book_title|capfirst }}" type="text"
                                    class="form-control" required>
                         </div>
                         <div class="form-group">
@@ -278,7 +282,7 @@
                             <select name="book_author" class="form-control" required>
                                 {% for author in authors %}
                                 {% if author.id == book.book_author.id %}
-                                <option value="{{ author.id }}" selected>{{ author.name }}</option>
+                                <option value="{{ author.id }}" selected>{{ author.name|capfirst }}</option>
                                 {% else %}
                                 <option value="{{ author.id }}">{{ author.name }}</option>
                                 {% endif %}
@@ -404,7 +408,7 @@
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 </div>
                 <div class="modal-body">
-                    <p>Are you sure you want to delete the book "{{ book.book_title }}"?</p>
+                    <p>Are you sure you want to delete the book "{{ book.book_title|capfirst }}"?</p>
                     <p class="text-warning"><small>This action cannot be undone.</small></p>
                 </div>
                 <div>
@@ -447,14 +451,15 @@
                         <div class="col-sm">
                             <div class="form-group">
                                 <label>Title</label>
-                                <input readonly name="book_title" value="{{ book.book_title }}" type="text"
+                                <input readonly name="book_title" value="{{ book.book_title|capfirst }}" type="text"
                                        class="form-control">
                             </div>
                         </div>
                         <div class="col-sm">
                             <div class="form-group">
                                 <label>Author</label>
-                                <input readonly name="book_author" value="{{ book.book_author.name }}" type="text"
+                                <input readonly name="book_author" value="{{ book.book_author.name|capfirst }}"
+                                       type="text"
                                        class="form-control">
                             </div>
                         </div>
@@ -480,7 +485,7 @@
                             <div class="form-group">
                                 <label>Subcategory</label>
                                 {% for subcategory in book.sub_category.all %}
-                                {{ subcategory.name }}
+                                {{ subcategory.name|capfirst }}
                                 {% if not forloop.last %}, {% endif %}
                                 {% endfor %}
                             </div>
@@ -602,6 +607,13 @@
   $(this).find('.modal-dialog').first().focus();
 });
 
+
+
+
+
+
+
+
 </script>
 {% endfor %}
 
@@ -619,7 +631,7 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label>Book Title</label>
-                        <input readonly name="book_title" value="{{ book.book_title }}" type="text"
+                        <input readonly name="book_title" value="{{ book.book_title|capfirst }}" type="text"
                                class="form-control">
                     </div>
 

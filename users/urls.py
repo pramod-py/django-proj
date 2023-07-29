@@ -9,4 +9,6 @@ urlpatterns = [ path('manageuser/', views.manageuser, name='manageuser'),
                 path('viewuser/', views.viewuser, name='viewuser'),
                 path('viewuserqrcode/', views.viewuserqrcode, name='viewuserqrcode'),
                 path('searchuser/', views.searchuser, name='searchuser'),
+                path('id_card_page/<int:user_id>/', views.id_card_page, name='id_card_page'),
+
               ]

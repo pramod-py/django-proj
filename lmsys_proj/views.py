@@ -10,6 +10,8 @@ from books.models import *
 def home(request):
     user_obj = Users.objects.filter(is_active=True)
     total_active_user = user_obj.count()
+    user_obj = Users.objects.filter(is_active=False)
+    total_inactive_user = user_obj.count()
     available_book_obj = DB_Books.objects.filter(status=True)
     available_book_count = available_book_obj.count()
     borrowed_book_obj = DB_Books.objects.filter(status=False)
@@ -17,7 +19,7 @@ def home(request):
     total_book = int(available_book_count) + int(borrowed_book_count)
     context = {'active_user_count': total_active_user, 'total_book': total_book,
                'available_book_count': available_book_count,
-               'borrowed_book_count': borrowed_book_count}
+               'borrowed_book_count': borrowed_book_count, 'total_inactive_user': total_inactive_user}
     return render(request, 'home.html', context=context)
 
 

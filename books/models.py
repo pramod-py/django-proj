@@ -30,18 +30,14 @@ class SubCategory(models.Model):
     def __str__(self):
         return self.name
 
+
 class RackName(models.Model):
     rack_number = models.IntegerField()
     name = models.CharField(max_length=30)
 
     def __str__(self):
         return self.name
-    
-# class BookId(models.Model):
-#     book_id = models.UUIDField(default=uuid.uuid4, editable=False)
-#
-#     def __str__(self):
-#         return str(self.book_id.hex)[:10]
+
     
 def generate_unique_book_id():
     while True:
@@ -58,7 +54,7 @@ class DB_Books(models.Model):
     book_author = models.ForeignKey(Author, on_delete=models.CASCADE)
     sub_category = models.ManyToManyField(SubCategory)
     categories = models.ManyToManyField(Category)
-    publish_date = models.DateTimeField(default=timezone.now) # need to change default
+    publish_date = models.DateTimeField(default=timezone.now)  # need to change default
     number_of_copies = models.IntegerField(default=0)
     status = models.BooleanField(default=True)
     book_language = models.CharField(max_length=20)
@@ -84,7 +80,7 @@ class DB_Books(models.Model):
         # return f'{self.book_title} {self.book_id} {self.categories.name} {self.sub_category.name} {self.status}'
     
     def save(self, *args, **kwargs):
-        # self.no_of_copies_current = int(self.no_of_copies_actual)
+        self.no_of_copies_current = self.no_of_copies_actual = 1
         # if self.no_of_copies_current > 0:
         #     self.status = True  # Set status as True if there are available copies
         #     self.availability = 'Available'

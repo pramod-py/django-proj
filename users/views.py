@@ -144,3 +144,11 @@ def searchuser(request):
 
     context = {'user_obj': user_obj}
     return redirect(request, '/users/manageuser', context)
+
+
+def id_card_page(request, user_id):
+    # Get the user data using the user_id and pass it to the template context
+    user = Users.objects.get(id=user_id)  # Replace User with your actual user model
+    context = {'user': user}
+    print(context)
+    return render(request, '/users/id_card_page.html', context)

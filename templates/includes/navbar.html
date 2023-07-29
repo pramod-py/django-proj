@@ -12,7 +12,7 @@
       </div>
       {% else %}
       <div class="w3-col s8 w3-bar">
-        <small class="title text-muted"> Welcome {{user.first_name}}!</small><br>
+        <small class="title text-muted"> Welcome {{user.first_name|capfirst}}!</small><br>
          <div> <a href="{% url 'home' %}"> Dashboard </a><span class="dark-transp"> | <a href="{% url 'logout' %}"> Logout </a><br> </div>
       </div>
      

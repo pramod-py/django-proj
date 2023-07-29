@@ -116,26 +116,24 @@ def delete_book(request, id):
         book_obj = DB_Books.objects.filter(id=id)
         book_qr_code_url = request.POST.get('book_qr_code')
         book_cover_image_url = request.POST.get('book_cover_image')
-        if book_qr_code_url != 'NO_QR_CODE_IMG':
-            file_path_qr = 'C:\\Users\\admin\\Downloads\\lmsys\\' + book_qr_code_url
-            file_path_qr = Path(file_path_qr)
-
-            if file_path_qr.exists():
-                file_path_qr.unlink()
-
-        if book_cover_image_url != 'NO_COVER_IMG':
-            file_path_cover_img = 'C:\\Users\\admin\\Downloads\\lmsys\\' + book_cover_image_url
-            file_path_cover_img = Path(file_path_cover_img)
-
-            if file_path_cover_img.exists():
-                file_path_cover_img.unlink()
+        # if book_qr_code_url != 'NO_QR_CODE_IMG':
+        #     file_path_qr = 'C:\\Users\\admin\\Downloads\\lmsys\\' + book_qr_code_url
+        #     file_path_qr = Path(file_path_qr)
+        #
+        #     if file_path_qr.exists():
+        #         file_path_qr.unlink()
+        #
+        # if book_cover_image_url != 'NO_COVER_IMG':
+        #     file_path_cover_img = 'C:\\Users\\admin\\Downloads\\lmsys\\' + book_cover_image_url
+        #     file_path_cover_img = Path(file_path_cover_img)
+        #
+        #     if file_path_cover_img.exists():
+        #         file_path_cover_img.unlink()
 
         # BASE_DIR = Path(__file__).resolve().parent.parent
         # print(BASE_DIR)
         # print('----------------------')
         # file_path = BASE_DIR / qr_code_url
-
-
 
         book_obj.delete()
         messages.success(request, 'Book Details deleted successfully!')

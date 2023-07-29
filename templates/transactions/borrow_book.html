@@ -108,7 +108,7 @@
                            style="color: blue; font-weight: bold;">
                 </div>
                 <div class="form-group">
-                    <label for="author">NO OF COPIES </label>
+                    <label for="author">Book Author</label>
                     <input readonly type="text" class="form-control" id="author" placeholder="Enter Author"
                            style="color: blue; font-weight: bold;">
                 </div>
@@ -271,10 +271,10 @@
              // console.log("data", data);
               nobookdata.innerHTML = ""; // Clear the error message
               const book = data[0]; // Assuming you only get one user object in the array
-
+                console.log(book)
                 $("#bookTitle").val(book.book_title);
                 $("#bookId").val(book.book_id);
-                $("#author").val(book.no_of_copies_current);
+                $("#author").val(book.book_author__name);
                 $("#language").val(book.book_language);
                 $("#book_id_data").val(book.book_id);
 

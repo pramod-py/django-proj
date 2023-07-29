@@ -74,26 +74,27 @@
                 </a>
             </div>
         </div>
+
     </div>
 </div>
-
-<div class="container">
-<p>
-
-    1. Print() user data(ID Card) <br>
-    2. Add bulk data from csv file<br>
-    3. Add vertical scroll bar if screen size is small <br>
-    4. Remove unwanted column from user model<br>
-    5. Check on delete cascade functionality <br>
-    6. Add Membership logic- Platinum, Gold, Silver according this set book borrow limit.<br>
-    7. <s>Check QR file are why overriding and QR code fix size </s>><br>
-    8. <s>Add column in User model Number of books borrowed and check is_active based on this condition</s><br>
-    9. <s>Pagination functionality</s> <br>
-    10.<s>User status= True if book borrowed </s><br>
-    11.<s>Add librarian in transaction model</s> <br>
-
-
-</p>
+<div class="container-fluid">
+	<div class="w3-row-padding w3-margin-bottom">
+		     <div class="w3-quarter">
+            <div class="w3-container w3-cyan w3-text-white w3-padding-16">
+                <div class="w3-left"><i class="fa fa-users w3-xxxlarge"></i></div>
+                <div class="w3-right">
+                    <h3>{{ total_inactive_user}}</h3>
+                </div>
+                <div class="w3-clear"></div>
+                <h4>Inactive Users</h4>
+                <a href="{% url 'manageuser' %}">
+                    <div class="w-auto p-3" style="background-color: rgba(255, 0, 0, .1); color: white !important;">More
+                        Info
+                    </div>
+                </a>
+            </div>
+        </div>
+	</div>
 </div>
 
 {% else %}

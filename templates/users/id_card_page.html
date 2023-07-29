@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<!-- Add ur Dynamic Content here -->
+<!-- Header -->
+{% if user.id is not None %}
+<header class="w3-container" style="padding-top:22px">
+    <h5><b><i class="fa fa-dashboard"></i> My Dashboard</b></h5>
+</header>
+{% include 'includes/alerts.html' %}
+
+
+
+<div class="id-card">
+    <div class="id-header">
+       <img src="https://pngimage.net/wp-content/uploads/2018/05/example-logo-png-1.png" class="id-logo" alt="logo">
+       <img class="id-photo" src="https://i.picsum.photos/id/770/200/200.jpg?hmac=QFpEnsRd_HVWziMxXltLr7icjRJhyhL7vsBAwyXrotA" alt="photo" />
+    </div>
+    <div class="id-details">
+      <h1 class="m-name">Mr. John Doe</h1>
+      <h3 class="m-designation">HOD - Company Name</h3>
+      <div class="m-info">
+          <div>
+            <div class="m-info-group">
+              <h4 class="info-label">ID Number: </h4>
+              <h4 class="info-value">DVS111222333</h4>
+            </div>
+            <div class="m-info-group">
+              <h4 class="info-label">Phone: </h4>
+              <h4 class="info-value">+91 1234567890</h4>
+            </div>
+            <div class="m-info-group">
+              <h4 class="info-label">Email: </h4>
+              <h4 class="info-value email">emailaddress@gmail.com</h4>
+            </div>
+            <div class="m-info-group">
+              <h4 class="info-label">Address: </h4>
+              <h4 class="info-value">Assam, India</h4>
+            </div>
+          </div>
+          <div class="m-qrcode">
+            <img src="https://i.picsum.photos/id/184/200/200.jpg?hmac=MflhZikSXVt3rvwnx8_nAvoHdLOwJFA0B2_Mk8vQvms" alt="qr-code">
+          </div>
+      </div>
+    </div>
+    <div class="id-footer">
+        www.website.com
+    </div>
+</div>
+
+{% else %}
+<div class="w3-third">
+    <h5>Regions</h5>
+    <img src="{% static 'images/region.jpg' %}" style="width:100%" alt="Google Regional Map">
+</div>
+
+{% endif %}
+{% endblock %}

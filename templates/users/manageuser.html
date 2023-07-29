@@ -61,7 +61,7 @@
                 <th>Email</th>
                 <!--                          <th>Address</th>-->
                 <th>Phone</th>
-                <th>Borrowed Book Count</th>
+                <th>#Borrowed Book</th>
                 <th>Status</th>
                 <th>Actions</th>
             </tr>
@@ -76,7 +76,7 @@
                     </span>
                 </td>-->
                 <td>{{ forloop.counter }}</td>
-                <td>{{ user.first_name }} {{ user.last_name }}</td>
+                <td>{{ user.first_name|capfirst }} {{ user.last_name|capfirst }}</td>
                 <td>{{ user.email }}</td>
                 <!--                          <td>{{ user.address }}</td>-->
                 <td>{{ user.phone_number }}</td>
@@ -106,6 +106,7 @@
                             data-toggle="tooltip"
                             title="View"
                             style="color:#28B463 ;">&#xE8F4;</i></a>
+                     <a href="{% url 'id_card_page' user.id %}" target="_blank">ID Card</a>
                 </td>
             </tr>
             {% endfor %}
@@ -213,12 +214,12 @@
 
                     <div class="form-group">
                         <label>First Name</label>
-                        <input name="first_name" value="{{ user.first_name }}" type="text" class="form-control"
+                        <input name="first_name" value="{{ user.first_name|capfirst }}" type="text" class="form-control"
                                required>
                     </div>
                     <div class="form-group">
                         <label>Last Name</label>
-                        <input name="last_name" value="{{ user.last_name }}" type="text" class="form-control"
+                        <input name="last_name" value="{{ user.last_name|capfirst }}" type="text" class="form-control"
                                required>
                     </div>
                     <div class="form-group">
@@ -260,7 +261,7 @@
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 </div>
                 <div class="modal-body">
-                    <p>Are you sure you want to delete <b>{{user.first_name}}</b> Records?</p>
+                    <p>Are you sure you want to delete <b>{{user.first_name|capfirst}}</b> Records?</p>
                     <p class="text-warning"><small>This action cannot be undone.</small></p>
                 </div>
                 <div class="modal-footer">
@@ -294,12 +295,12 @@
 
                         <div class="form-group">
                             <label>First Name</label>
-                            <input readonly name="first_name" value="{{ user.first_name }}" type="text"
+                            <input readonly name="first_name" value="{{ user.first_name|capfirst }}" type="text"
                                    class="form-control">
                         </div>
                         <div class="form-group">
                             <label>Last Name</label>
-                            <input readonly name="last_name" value="{{ user.last_name }}" type="text"
+                            <input readonly name="last_name" value="{{ user.last_name|capfirst }}" type="text"
                                    class="form-control">
                         </div>
                         <div class="form-group">
@@ -341,29 +342,53 @@
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 </div>
                 <div class="modal-body">
+                    <div id="printableContent">
                     <div class="form-group">
-                        <label>First Name</label>
-                        <input readonly name="first_name" value="{{ user.first_name }}" type="text"
-                               class="form-control">
+                       <p style="text-align: right;"><strong>Date Joined:</strong> {{ user.joined_date|date:"Y-m-d" }}</p>
+
+                        <p style="text-align: left;"><strong>Name:</strong> {{ user.first_name|capfirst }} {{ user.last_name|capfirst }}</p>
+                        <p  style="text-align: left;"><strong>Phone :</strong> {{ user.phone_number }}</p>
+<!--                        <label>Name</label>-->
+<!--                        <input readonly name="first_name" value="{{ user.first_name|capfirst }} {{ user.last_name|capfirst }}" type="text"-->
+<!--                               class="form-control">-->
                     </div>
 
-                    <div class="form-group">
-                        <label>Phone Number</label>
-                        <input readonly name="phone_number" value="{{ user.phone_number }}" type="text"
-                               class="form-control">
-                    </div>
+<!--                    <div class="form-group">-->
+<!--                        <label>Phone Number</label>-->
+<!--                        <input readonly name="phone_number" value="{{ user.phone_number }}" type="text"-->
+<!--                               class="form-control">-->
+<!--                    </div>-->
                     <div>
-                        <label>QR Code</label>
+                        <label>QR Code</label><br>
                         <img src={{user.qr_code.url}} width="250" height="250">
                     </div>
+                    </div>
                 </div>
+
                 <div class="modal-footer">
+
+                    <button type="button" class="btn btn-primary" onclick="printModal('printableContent')">Print</button>
                     <input type="button" class="btn btn-default" data-dismiss="modal" value="Close">
                 </div>
             </form>
         </div>
     </div>
 </div>
+<script>
+function printModal(divId) {
+    const printableContent = document.querySelector(`#${divId}`).innerHTML;
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write('<html><head><title>Library Name</title>');
+    printWindow.document.write('</head><body>');
+    printWindow.document.write(printableContent);
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
+    printWindow.print();
+    printWindow.close();
+}
+</script>
+
+
 {% endfor %}
 
 

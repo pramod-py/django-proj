@@ -6,6 +6,7 @@ from PIL import Image, ImageDraw
 import os
 from django.core.files.base import ContentFile
 from pathlib import Path
+from django.utils import timezone
 # Create your models here.
 
 
@@ -20,6 +21,7 @@ class Users(models.Model):
     borrowed_book_status = models.BooleanField(default=False)
     borrowed_book_id = models.CharField(max_length=20, default='00')
     number_of_books_borrowed = models.IntegerField(default=0)
+    joined_date = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return f'{self.email} {self.first_name} {self.last_name}'
@@ -83,7 +85,7 @@ class Users(models.Model):
             # Create a new QR code for new users
             qr_code_data = f'{self.phone_number}${self.borrowed_book_id}'
             qrcode_img = qrcode.make(qr_code_data)
-            canvas = Image.new('RGB', (290, 290), 'white')
+            canvas = Image.new('RGB', (350, 350), 'white')
             canvas.paste(qrcode_img)
             buffer = BytesIO()
             canvas.save(buffer, 'PNG')

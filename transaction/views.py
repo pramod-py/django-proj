@@ -42,15 +42,12 @@ def fetch_book_info(request):
         search_str = json.loads(request.body).get('searchText')
         # search_user = Q(phone_number__contains=search_str)
         book_obj = DB_Books.objects.filter(book_id=search_str)
-        data = book_obj.values()
+        # data = book_obj.values()
+        data = book_obj.values('book_id', 'book_title', 'book_author_id', 'book_author__name', 'book_language')
         if book_obj.exists():
-            ## check book status is false we cant allow to borrow it again
-            # messages.success(request, f'Record Found for: {search_str}')
             return JsonResponse(list(data), safe=False)
         else:
-            # messages.error(request, f'No records found for the query: {search_str}')
             return JsonResponse(list(data), safe=False)
-
 
 
 def borrow_book_old(request):
@@ -58,10 +55,8 @@ def borrow_book_old(request):
         phone_number = request.POST.get('user_phone_number_data')
         book_id = request.POST.get('book_id_data')
 
-        # print('**************', phone_number)
-        # print('___________', book_id)
         # Get book object to update book status to False
-        book_obj = DB_Books.objects.get(book_id=book_id) #need to check qr code file is updating or creating new one
+        book_obj = DB_Books.objects.get(book_id=book_id)
         book_obj.status = False
         book_obj.save()
         # Retrieve the Users instance based on the user_id
