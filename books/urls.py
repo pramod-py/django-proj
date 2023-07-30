@@ -25,5 +25,6 @@ urlpatterns = [ path('managebook/', views.managebook, name='managebook'),
                 path('view_subcategory/', views.view_subcategory, name='view_subcategory'),
                 path('delete_subcategory/<str:id>', views.delete_subcategory, name='delete_subcategory'),
                 # path('search_category/<str:id>', views.search_category, name='search_category'),
+                path('upload/', views.upload_books, name='upload_books'),
 
               ]

@@ -15,6 +15,7 @@ from django.contrib.auth.decorators import login_required
 # Create your views here.
 
 
+@login_required
 def transaction(request):
     borrow_transaction_obj = Transaction.objects.filter(is_returned=False, date_added__date=timezone.now().date()).order_by('-date_added')
     return_transaction_obj = Transaction.objects.filter(is_returned=True, return_date__date=timezone.now().date()).order_by('-date_added')
@@ -23,6 +24,7 @@ def transaction(request):
     return render(request, 'transactions/transaction.html', context)
 
 
+@login_required
 def fetch_user_info(request):
     if request.method == "POST":
         search_str = json.loads(request.body).get('searchText')
@@ -37,6 +39,7 @@ def fetch_user_info(request):
             return JsonResponse(list(data), safe=False)
 
 
+@login_required
 def fetch_book_info(request):
     if request.method == "POST":
         search_str = json.loads(request.body).get('searchText')
@@ -49,7 +52,7 @@ def fetch_book_info(request):
         else:
             return JsonResponse(list(data), safe=False)
 
-
+@login_required
 def borrow_book_old(request):
     if request.method == 'POST':
         phone_number = request.POST.get('user_phone_number_data')
@@ -121,6 +124,7 @@ def return_book(request):
             return render(request, 'transactions/return_book.html')
 
     return render(request, 'transactions/return_book.html')
+
 
 @login_required
 def borrow_book(request):

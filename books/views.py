@@ -5,15 +5,18 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.db.models import Q
 from pathlib import Path
-
+import csv
 from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import login_required
 
 
-
+@login_required
 def managebook(request):
     if 'query' in request.GET:
         query = request.GET['query']
-        search_book = Q(Q(book_title__icontains=query)|Q(book_language__icontains=query)|Q(book_author__name__icontains=query)|Q(categories__name__icontains=query)|Q(rack_number__name__icontains=query))
+        search_book = Q(Q(book_title__icontains=query) | Q(book_language__icontains=query) | Q(
+            book_author__name__icontains=query) | Q(categories__name__icontains=query) | Q(
+            rack_number__name__icontains=query) | Q(book_id__icontains=query))
         book_obj = DB_Books.objects.filter(search_book)
         if not book_obj.count():
             messages.error(request, f'No records found for the {query} query.')
@@ -28,11 +31,9 @@ def managebook(request):
     categories = Category.objects.all()
     subcategories = SubCategory.objects.all()
     racks = RackName.objects.all()
-    context = {'book_obj': book_obj, 'authors': authors, 'categories': categories, 'subcategories': subcategories, 'racks': racks}
+    context = {'book_obj': book_obj, 'authors': authors, 'categories': categories, 'subcategories': subcategories,
+               'racks': racks}
     return render(request, 'books/managebook.html', context)
-
-
-
 
 
 @require_POST
@@ -75,21 +76,21 @@ def add_book(request):
 
     # Create the book object and save it to the database
     book = DB_Books(
-                    book_title=book_title,
-                    book_author=author,
-                    # new_author=new_author,
-                    # categories=categories,
-                    # sub_category=sub_category,
-                    publish_date=publish_date,
-                    # status=status,
-                    book_language=book_language,
-                    no_of_copies_actual=no_of_copies_actual,
-                    # rack_number=rack_number,
-                    book_price=book_price,
-                    description=book_description,
-                    publisher=book_publisher,
-                    isbn=isbn,
-                    cover_image=cover_image)
+        book_title=book_title,
+        book_author=author,
+        # new_author=new_author,
+        # categories=categories,
+        # sub_category=sub_category,
+        publish_date=publish_date,
+        # status=status,
+        book_language=book_language,
+        no_of_copies_actual=no_of_copies_actual,
+        # rack_number=rack_number,
+        book_price=book_price,
+        description=book_description,
+        publisher=book_publisher,
+        isbn=isbn,
+        cover_image=cover_image)
 
     if DB_Books.objects.filter(book_title=book_title).exists():
         messages.error(request, f'Book Name already used. Please use a different Book Name.')
@@ -104,12 +105,14 @@ def add_book(request):
         return redirect('/books/managebook')
 
 
+@login_required
 def view_book(request):
     book_obj = DB_Books.objects.all()
     context = {'book_obj': book_obj}
     return redirect(request, '/books/managebook', context)
 
 
+@login_required
 def delete_book(request, id):
     if request.method == 'POST':
         print(id)
@@ -142,18 +145,21 @@ def delete_book(request, id):
 
 
 # view Book qr code
+@login_required
 def view_bookqrcode(request):
     book_obj = DB_Books.objects.all()
     context = {'book_obj': book_obj}
     return redirect(request, '/books/managebook', context)
 
 
+@login_required
 def edit_book(request):
     book_obj = DB_Books.objects.all()
     context = {'book_obj': book_obj}
     return redirect(request, '/books/managebook', context)
 
 
+@login_required
 def update_book(request, id):
     if request.method == 'POST':
         book_title = request.POST.get('book_title')
@@ -221,6 +227,7 @@ def update_book(request, id):
 
 
 ##---------------- Category ----------------------
+@login_required
 def managecategory(request):
     if 'query' in request.GET:
         query = request.GET['query']
@@ -237,10 +244,11 @@ def managecategory(request):
     return render(request, 'books/managecategory.html', context)
 
 
+@login_required
 def add_category(request):
     if request.method == 'POST':
         category_name = request.POST.get('category_name')
-    
+
         if Category.objects.filter(name=category_name).exists():
             messages.error(request, f'Category Name already used. Please use a different Category.')
             return redirect('/books/managecategory')
@@ -251,24 +259,27 @@ def add_category(request):
             return redirect('/books/managecategory')
 
 
+@login_required
 def edit_category(request):
     cat_obj = Category.objects.all()
     context = {'cat_obj': cat_obj}
     return redirect(request, '/books/managecategory', context)
 
 
+@login_required
 def update_category(request, id):
-     if request.method == 'POST':
+    if request.method == 'POST':
         category_name = request.POST.get('category_name')
-              
         # Find the Category object to update
-        cat_obj = Category.objects.get(id=id)       
+        cat_obj = Category.objects.get(id=id)
         # Update the user data
         cat_obj.name = category_name
         cat_obj.save()
         messages.success(request, 'Category updated successfully!')
         return redirect('/books/managecategory')
-     
+
+
+@login_required
 def delete_category(request, id):
     if request.method == 'POST':
         cat_obj = Category.objects.filter(id=id)
@@ -276,11 +287,14 @@ def delete_category(request, id):
         messages.success(request, 'Category deleted successfully!')
         context = {'cat_obj': cat_obj}
         return redirect('/books/managecategory')
-    
+
+
+@login_required
 def view_category(request):
     category_obj = Category.objects.all()
     context = {'cat_obj': category_obj}
     return redirect(request, '/books/managecategory', context)
+
 
 # def search_category(request):
 #     cat_obj = Category.objects.all()
@@ -291,26 +305,28 @@ def view_category(request):
 #     return redirect(request, '/books/managecategory', context)
 
 
-
 ##----------------Sub Category----------------------
 
+@login_required
 def managesubcategory(request):
     if 'query' in request.GET:
         query = request.GET['query']
         search_category = Q(Q(name__icontains=query))
         cat_obj = SubCategory.objects.filter(search_category)
-        if  not cat_obj.count(): 
+        if not cat_obj.count():
             messages.error(request, f'No records found for the {query} query.')
         else:
-            if query !='':
+            if query != '':
                 messages.success(request, f'{cat_obj.count()} Record Found For:{query}')
     else:
         cat_obj = SubCategory.objects.all()
     categories = Category.objects.all()
-    context = {'cat_obj': cat_obj, 'categories' : categories}
+    context = {'cat_obj': cat_obj, 'categories': categories}
     return render(request, 'books/managesubcategory.html', context)
 
-# https://www.youtube.com/watch?v=LmYDXgYK1so&ab_channel=CodeBand  
+
+# https://www.youtube.com/watch?v=LmYDXgYK1so&ab_channel=CodeBand
+@login_required
 def add_subcategory(request):
     if request.method == 'POST':
         # Retrieve the selected category value
@@ -319,7 +335,7 @@ def add_subcategory(request):
         selected_category = Category.objects.get(id=selected_category_id)
 
         subcategory_name = request.POST.get('subcategory_name')
-    
+
         if SubCategory.objects.filter(name=subcategory_name).exists():
             messages.error(request, f'Subcategory Name already used. Please use a different Subcategory.')
             return redirect('/books/managesubcategory')
@@ -330,32 +346,38 @@ def add_subcategory(request):
             return redirect('/books/managesubcategory')
 
 
+@login_required
 def edit_subcategory(request):
     cat_obj = SubCategory.objects.all()
-    context = {'cat_obj':cat_obj}
+    context = {'cat_obj': cat_obj}
     return redirect(request, '/books/managesubcategory', context)
 
 
-def update_subcategory(request,id):
-     if request.method == 'POST':
+@login_required
+def update_subcategory(request, id):
+    if request.method == 'POST':
         subcategory_name = request.POST.get('subcategory_name')
-              
+
         # Find the Category object to update
-        cat_obj = SubCategory.objects.get(id=id)       
+        cat_obj = SubCategory.objects.get(id=id)
         # Update the user data
         cat_obj.name = subcategory_name
         cat_obj.save()
         messages.success(request, 'Subcategory updated successfully!')
         return redirect('/books/managesubcategory')
-     
-def delete_subcategory(request,id):
+
+
+@login_required
+def delete_subcategory(request, id):
     if request.method == 'POST':
         cat_obj = SubCategory.objects.filter(id=id)
         cat_obj.delete()
         messages.success(request, 'Subcategory deleted successfully!')
-        context = {'cat_obj':cat_obj}
+        context = {'cat_obj': cat_obj}
         return redirect('/books/managesubcategory')
-    
+
+
+@login_required
 def view_subcategory(request):
     subcategory_obj = SubCategory.objects.all()
     context = {'cat_obj': subcategory_obj}
@@ -368,3 +390,28 @@ def view_subcategory(request):
 #         cat_obj = cat_obj.filter(name__icontains=search_contains) 
 #     context = {'cat_obj': cat_obj}
 #     return redirect(request, '/books/managesubcategory', context)
+
+
+@login_required
+def upload_books(request):
+    if request.method == 'POST' and request.FILES.get('file'):
+        file = request.FILES['file']
+        if file.name.endswith('.csv'):
+            # Process CSV file
+            reader = csv.DictReader(file)
+            total_rows = sum(1 for row in reader)
+            file.seek(0)  # Reset the file pointer to start
+            reader = csv.DictReader(file)
+            for i, row in enumerate(reader, 1):
+                book = DB_Books(
+                    book_id=row['book_id'],
+                    book_title=row['book_title'],
+                    # Add other fields here according to your CSV columns
+                )
+                book.save()
+                progress = i * 100 // total_rows
+                messages.info(request, f'Processing: {progress}%')
+            messages.success(request, 'File uploaded successfully.')
+        else:
+            messages.error(request, 'Invalid file format. Only CSV files are allowed.')
+    return render(request, '/books/upload_books.html')

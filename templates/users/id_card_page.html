@@ -1,52 +1,209 @@
-{% extends 'base.html' %}
 {% load static %}
-{% block content %}
-<!-- Add ur Dynamic Content here -->
-<!-- Header -->
+<html>
+<head>
+    <title>LMSYS</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <link rel="shortcut icon" href="#">
+    <!--template manage book required this-->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Varela+Round">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <!--    QR code scanner -->
+    <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
+
+
+    <!-- custom style -->
+    <link href="{% static 'css/style.css' %}" rel="stylesheet" type="text/css"/>
+    <link href="{% static 'css/responsive.css' %}" rel="stylesheet" media="only screen and (max-width: 1200px)"/>
+
+    <script src="{% static 'js/script.js' %}" type="text/javascript"></script>
+
+    <link href="{% static 'css/print.css' %}" rel="stylesheet" type="text/css" media="print">
+
+
+    <style>
+html,body,h1,h2,h3,h4,h5 {font-family: 'Dosis', sans-serif;}
+
+
+    </style>
+    <style>
+.id-card{
+  border: 1px solid #ddd;
+  width: fit-content;
+}
+
+.id-header{
+  display: flex;
+  justify-content: center;
+  position: relative;
+  background-color: #02283D;
+  border-bottom-left-radius: 50%;
+  border-bottom-right-radius: 50%;
+}
+
+.id-header .id-logo{
+  position: absolute;
+  top: 1rem;
+  width: 120px;
+}
+
+.id-photo{
+  border-radius: 50%;
+  margin-top: 5rem;
+  margin-bottom: -4rem;
+  border: 10px solid #ddd;
+  width: 150px;
+}
+
+.id-details{
+  padding: 1rem;
+  margin-top: 3rem;
+}
+
+.id-details h1{
+  text-align: center;
+  font-size: 1.5rem;
+  text-transform: uppercase;
+  margin-bottom: 0.3rem;
+}
+
+.id-details h3{
+  text-align: center;
+  color: #ff0000;
+  margin-top: 0;
+  font-size: 1rem;
+  text-transform: uppercase;
+}
+
+.id-details .m-info{
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.id-details .m-info-group{
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+}
+
+.id-details .m-info-group .info-value{
+  color: #8F6144;
+  font-weight: 500;
+}
+
+.id-details .m-info-group .info-value.email{
+  text-transform: lowercase;
+}
+
+
+.id-details .m-info-group h4{
+  margin-bottom: 0;
+  margin-top: 0.2rem
+}
+
+.id-details .m-qrcode{
+  display: flex;
+  justify-content: center;
+  align-items: center
+}
+
+.id-details .m-qrcode img{
+  width: 150px;
+}
+
+.id-footer{
+  background-color: #02283D;
+  color: #FFFFFF;
+  text-align: center;
+  padding: 0.3rem;
+}
+
+
+    </style>
+</head>
+<body>
+
 {% if user.id is not None %}
 <header class="w3-container" style="padding-top:22px">
-    <h5><b><i class="fa fa-dashboard"></i> My Dashboard</b></h5>
+    <h5><b><i class="fa fa-dashboard"></i> ID Card</b></h5>
 </header>
 {% include 'includes/alerts.html' %}
-
-
-
-<div class="id-card">
-    <div class="id-header">
-       <img src="https://pngimage.net/wp-content/uploads/2018/05/example-logo-png-1.png" class="id-logo" alt="logo">
-       <img class="id-photo" src="https://i.picsum.photos/id/770/200/200.jpg?hmac=QFpEnsRd_HVWziMxXltLr7icjRJhyhL7vsBAwyXrotA" alt="photo" />
-    </div>
-    <div class="id-details">
-      <h1 class="m-name">Mr. John Doe</h1>
-      <h3 class="m-designation">HOD - Company Name</h3>
-      <div class="m-info">
-          <div>
-            <div class="m-info-group">
-              <h4 class="info-label">ID Number: </h4>
-              <h4 class="info-value">DVS111222333</h4>
+<div id="printableContent">
+    <div class="id-card">
+        <div class="id-header">
+            <!--        <img src="{% static 'images/avatar1.png' %}" class="id-logo" alt="logo">-->
+            <img class="id-photo"
+                 src="https://i.picsum.photos/id/770/200/200.jpg?hmac=QFpEnsRd_HVWziMxXltLr7icjRJhyhL7vsBAwyXrotA"
+                 alt="photo"/>
+        </div>
+        <div class="id-details">
+            <h1 class="m-name">{{user.first_name}} {{user.last_name}}</h1>
+            <!--        <h3 class="m-designation">HOD - Company Name</h3>-->
+            <div class="m-info">
+                <div>
+                    <!--                <div class="m-info-group">-->
+                    <!--                    <h4 class="info-label">ID Number: </h4>-->
+                    <!--                    <h4 class="info-value">DVS111222333</h4>-->
+                    <!--                </div>-->
+                    <div class="m-info-group">
+                        <h4 class="info-label">Phone: </h4>
+                        <h4 class="info-value">{{user.phone_number}}</h4>
+                    </div>
+                    <div class="m-info-group">
+                        <h4 class="info-label">Email: </h4>
+                        <h4 class="info-value email">{{user.email}}</h4>
+                    </div>
+                    <div class="m-info-group">
+                        <h4 class="info-label">Address: </h4>
+                        <h4 class="info-value">{{user.address}}</h4>
+                    </div>
+                </div>
+                <div class="m-qrcode">
+                    <img src={{user.qr_code.url}}
+                         alt="qr-code">
+                </div>
             </div>
-            <div class="m-info-group">
-              <h4 class="info-label">Phone: </h4>
-              <h4 class="info-value">+91 1234567890</h4>
-            </div>
-            <div class="m-info-group">
-              <h4 class="info-label">Email: </h4>
-              <h4 class="info-value email">emailaddress@gmail.com</h4>
-            </div>
-            <div class="m-info-group">
-              <h4 class="info-label">Address: </h4>
-              <h4 class="info-value">Assam, India</h4>
-            </div>
-          </div>
-          <div class="m-qrcode">
-            <img src="https://i.picsum.photos/id/184/200/200.jpg?hmac=MflhZikSXVt3rvwnx8_nAvoHdLOwJFA0B2_Mk8vQvms" alt="qr-code">
-          </div>
-      </div>
-    </div>
-    <div class="id-footer">
-        www.website.com
+        </div>
+        <div class="id-footer">
+            www.website.com
+        </div>
     </div>
 </div>
+
+<button type="button" class="btn btn-primary" onclick="printContent('printableContent')">Print</button>
+
+<!-- Hidden iframe to handle print operation -->
+<iframe id="printFrame" style="display: none;"></iframe>
+
+<script>
+function printContent(divId) {
+    const printableContent = document.querySelector(`#${divId}`).innerHTML;
+
+    // Create a new document in the iframe
+    const printFrame = document.getElementById('printFrame').contentWindow;
+    printFrame.document.open();
+    printFrame.document.write('<html><head><title>Print</title>');
+    printFrame.document.write('<link href="{% static "css/print.css" %}" rel="stylesheet" type="text/css"/>');
+    printFrame.document.write('</head><body>');
+    printFrame.document.write(printableContent);
+    printFrame.document.write('</body></html>');
+    printFrame.document.close();
+
+    // Print the document
+    printFrame.print();
+}
+</script>
+
 
 {% else %}
 <div class="w3-third">
@@ -55,4 +212,5 @@
 </div>
 
 {% endif %}
-{% endblock %}
+</body>
+</html>

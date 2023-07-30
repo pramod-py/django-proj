@@ -4,25 +4,28 @@ from users.models import Users
 from django.db.models import Q
 from pathlib import Path
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.contrib.auth.decorators import login_required
+
 
 # Create your views here.
-
+@login_required
 def manageuser(request):
     if 'query' in request.GET:
         query = request.GET['query']
         search_user = Q(Q(first_name__icontains=query)|Q(last_name__icontains=query)|Q(email__icontains=query)|Q(phone_number__icontains=query))
-        user_obj = Users.objects.filter(search_user)
+        user_obj = Users.objects.filter(search_user).order_by('-joined_date')
         if not user_obj.count():
             messages.error(request, f'No records found for the {query} query.')
         else:
             if query != '':
                 messages.success(request, f'{user_obj.count()} Record Found For:{query}')
     else:
-        user_obj = Users.objects.all()
+        user_obj = Users.objects.all().order_by('-joined_date')
     context = {'user_obj': user_obj}
     return render(request, 'users/manageuser.html', context)
 
 
+@login_required
 def manageuser_pagination(request):
     query = request.GET.get('query')
     if query:
@@ -52,7 +55,7 @@ def manageuser_pagination(request):
     return render(request, 'users/manageuser.html', context)
 
 
-
+@login_required
 def adduser(request):
     if request.method == 'POST':
         first_name = request.POST.get('first_name')
@@ -74,12 +77,14 @@ def adduser(request):
             return redirect('/users/manageuser')
 
 
+@login_required
 def edituser(request):
     user_obj = Users.objects.all()
     context = {'user_obj': user_obj}
     return redirect(request, '/users/manageuser', context)
 
 
+@login_required
 def updateuser(request, id):
     if request.method == 'POST':
         first_name = request.POST.get('first_name')
@@ -112,6 +117,7 @@ def updateuser(request, id):
         return redirect('/users/manageuser')
 
 
+@login_required
 def deleteuser(request, id):
     if request.method == 'POST':
         user_obj = Users.objects.filter(id=id)
@@ -121,19 +127,21 @@ def deleteuser(request, id):
         return redirect('/users/manageuser')
 
 
+@login_required
 def viewuser(request):
     user_obj = Users.objects.all()
     context = {'user_obj': user_obj}
     return redirect(request, '/users/manageuser', context)
 
 
-# viewuserqrcode
+@login_required
 def viewuserqrcode(request):
     user_obj = Users.objects.all()
     context = {'user_obj': user_obj}
     return redirect(request, '/users/manageuser', context)
 
 
+@login_required
 def searchuser(request):
     user_obj = Users.objects.all()
 
@@ -146,9 +154,10 @@ def searchuser(request):
     return redirect(request, '/users/manageuser', context)
 
 
+@login_required
 def id_card_page(request, user_id):
     # Get the user data using the user_id and pass it to the template context
     user = Users.objects.get(id=user_id)  # Replace User with your actual user model
     context = {'user': user}
     print(context)
-    return render(request, '/users/id_card_page.html', context)
+    return render(request, 'users/id_card_page.html', context)  # Use render function to render the template

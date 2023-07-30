@@ -24,15 +24,16 @@
     <div class="w3-bar-block">
       <a href="#" class="w3-bar-item w3-button w3-padding-16 w3-hide-large w3-dark-grey w3-hover-black" onclick="w3_close()" title="close menu"><i class="fa fa-remove fa-fw"></i>  Close Menu</a>
       <a href="{% url 'home' %}" class="w3-bar-item w3-button w3-padding"><i class="fa fa-home fa-fw"></i>  Dashboard </a>
-      <a href="{% url 'transaction' %}"class="w3-bar-item w3-button w3-padding"><i class="fa fa-bullseye fa-fw"></i>  Transactions</a>
+      <a href="{% url 'transaction' %}"class="w3-bar-item w3-button w3-padding"><i class="fa fa-random fa-fw"></i>  Transactions</a>
       <a href="{% url 'manageuser' %}" class="w3-bar-item w3-button w3-padding"><i class="fa fa-users fa-fw"></i>  Manage User</a>
       
       <div class="w3-dropdown-hover">
-        <button class="w3-button"><i class="fa fa-bell fa-fw"></i> Manage Book</button>
+        <button class="w3-button"><i class="fa fa-book fa-fw"></i> Manage Book</button>
         <div class="w3-dropdown-content w3-bar-block w3-card-4">
             <a href="{% url 'managebook' %}" class="w3-bar-item w3-button">Book</a>
           <a href="{% url 'managecategory' %}" class="w3-bar-item w3-button">Category</a>
           <a href="{% url 'managesubcategory' %}" class="w3-bar-item w3-button">Sub Category</a>
+            <a href="{% url 'upload_books' %}" class="w3-bar-item w3-button">Bulk Upload Book Record</a>
 
         </div>
       </div>
